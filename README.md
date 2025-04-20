@@ -40,5 +40,5 @@ Plataforma para la reservación de paquetes turísticos, vuelos y hoteles con in
 3. **Sistema** valida y procesa los cambios.
 4. **Sistema** retorna confirmación o errores en el procesamiento.
 
-## Estructura del Proyecto
+
 
