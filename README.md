@@ -70,6 +70,63 @@ Bienvenido al **Sistema de Agencia de Viajes**, una plataforma web para gestiona
 
 ---
 
+## 📂 Estructura del Proyecto
+A continuación, se detalla la estructura de carpetas y archivos del proyecto:
+
+```bash
+CRUZERD
+├── /app                         # Carpeta principal de la aplicación
+│   ├── /routes                  # Rutas de la aplicación (controladores)
+│   │   ├── /__pycache__         # Archivos compilados de Python
+│   │   ├── agente.py            # Lógica y rutas para el agente
+│   │   ├── auth.py              # Lógica y rutas para la autenticación
+│   │   ├── cliente.py           # Lógica y rutas para el cliente
+│   │   ├── index.py             # Página principal (índice)
+│   │   ├── proveedor.py         # Lógica y rutas para el proveedor
+│   │   └── __init__.py          # Inicialización de rutas
+│   ├── /static                  # Archivos estáticos (CSS, JS, imágenes)
+│   │   ├── /css                 # Estilos de la aplicación
+│   │   │   ├── agent_dashboard.css # Estilos para el dashboard del agente
+│   │   │   ├── cliente.css      # Estilos para la vista cliente
+│   │   │   ├── proveedor.css    # Estilos para la vista proveedor
+│   │   │   └── style.css        # Estilos generales
+│   │   ├── /IMG                 # Imágenes utilizadas en la app
+│   │   │   ├── Air Europa.jpg   # Imagen de Air Europa
+│   │   │   ├── America airline.png # Imagen de America airline
+│   │   │   ├── Avatar.png       # Imagen de avatar
+│   │   │   └── ...              # Otras imágenes
+│   │   ├── /js                  # Archivos JavaScript
+│   │   │   ├── agent_dashboard.js # JS para el dashboard del agente
+│   │   │   ├── cliente.js       # JS para la vista cliente
+│   │   │   ├── proveedor.js     # JS para la vista proveedor
+│   │   │   └── script.js        # JS general
+│   ├── /templates               # Plantillas HTML
+│   │   ├── /agente              # Plantillas para vistas del agente
+│   │   │   └── dashboard.html   # Vista del dashboard del agente
+│   │   ├── /cliente             # Plantillas para vistas del cliente
+│   │   │   └── dashboard.html   # Vista del dashboard del cliente
+│   │   ├── /proveedor           # Plantillas para vistas del proveedor
+│   │   │   └── dashboard.html   # Vista del dashboard del proveedor
+│   │   ├── index.html           # Página principal de la aplicación
+├── /DB Scripts                  # Scripts SQL para la base de datos
+│   ├── Casos de Estudio.sql     # Script de casos de estudio
+│   ├── Consultas JOINS.sql      # Script de consultas con joins
+│   ├── Consultas Sencillas.sql  # Script de consultas sencillas
+│   ├── CRUZERD.sql              # Script para la base de datos principal
+│   ├── Eliminaciones.sql        # Script para eliminaciones
+│   ├── Insercciones.sql         # Script para inserciones
+│   ├── Modificaciones.sql       # Script para modificaciones
+│   ├── SubConsultas.sql         # Script para subconsultas
+├── /__pycache__                 # Archivos compilados de Python
+├── config.py                    # Archivo de configuración principal
+├── CRUZERD.sql                  # Script de base de datos inicial
+├── estructura.txt               # Archivo con la estructura de carpetas
+├── README.md                    # Documentación del proyecto
+├── requirements.txt             # Dependencias del proyecto
+├── run.py                       # Archivo principal para ejecutar la app
+
+```
+
 ## ⚙️ Instalación del Proyecto
 
 ### 📦 Clona el repositorio
