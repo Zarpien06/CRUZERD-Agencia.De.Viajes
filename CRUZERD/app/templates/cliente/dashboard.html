@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUZERD - Dashboard Cliente</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='IMG/logo-1.png') }}" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cliente.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="{{ url_for('static', filename='IMG/logo-1.png') }}" alt="CRUZERD Logo" class="logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="dashboard-link">
+                            <i class="fas fa-home"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="reservas-link">
+                            <i class="fas fa-calendar-check"></i> Mis Reservas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="buscar-link">
+                            <i class="fas fa-search"></i> Buscar Viajes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="perfil-link">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="text-light me-3" id="user-name">Bienvenido/a, <span id="cliente-nombre">Usuario</span></span>
+                    <button class="btn btn-outline-light" id="logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal de cierre de sesión -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="logoutModalLabel">¿Estás seguro?</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          ¿Deseas cerrar sesión?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Cerrar Sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+    <!-- Main Content -->
+    <div class="container-fluid main-content">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 col-md-4 sidebar">
+                <div class="user-info text-center mb-4">
+                    <img src="{{ url_for('static', filename='IMG/Avatar.png') }}" alt="User Avatar" class="avatar">
+                    <h4 id="sidebar-user-name">Usuario</h4>
+                    <p id="sidebar-user-email">usuario@email.com</p>
+                </div>
+                <div class="sidebar-menu">
+                    <a href="#" class="active" id="dashboard-sidebar">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="#" id="reservas-sidebar">
+                        <i class="fas fa-calendar-check"></i> Mis Reservas
+                    </a>
+                    <a href="#" id="proximos-viajes-sidebar">
+                        <i class="fas fa-plane-departure"></i> Próximos Viajes
+                    </a>
+                    <a href="#" id="promociones-sidebar">
+                        <i class="fas fa-tag"></i> Promociones
+                    </a>
+                    <a href="#" id="perfil-sidebar">
+                        <i class="fas fa-user-cog"></i> Editar Perfil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-lg-9 col-md-8 content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="active-section">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="welcome-banner">
+                                <h2>¡Bienvenido a tu Dashboard, <span id="dashboard-user-name">Usuario</span>!</h2>
+                                <p>Desde aquí podrás gestionar tus reservas, buscar nuevos destinos y actualizar tu información personal.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="card-icon">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <h5 class="card-title">Reservas Activas</h5>
+                                    <p class="card-text">Tienes <span id="active-reservations">2</span> reservas activas</p>
+                                    <button class="btn btn-primary" id="view-reservations-btn">Ver detalles</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="card-icon">
+                                        <i class="fas fa-plane"></i>
+                                    </div>
+                                    <h5 class="card-title">Próximo Viaje</h5>
+                                    <p class="card-text" id="next-trip">Cancún, México - 15/05/2025</p>
+                                    <button class="btn btn-primary" id="view-trips-btn">Ver itinerario</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <div class="card-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <h5 class="card-title">Promociones</h5>
+                                    <p class="card-text"><span id="promotions-count">3</span> promociones disponibles</p>
+                                    <button class="btn btn-primary" id="view-promotions-btn" data-bs-toggle="modal" data-bs-target="#promocionesModal">Ver promociones</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-gradient">
+                                    <h5>Destinos Recomendados</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="destination-card">
+                                                <img src="{{ url_for('static', filename='IMG/Cancun.jpg') }}" class="img-fluid" alt="Destino">
+                                                <div class="destination-info">
+                                                    <h5>Cancún, México</h5>
+                                                    <p>Desde $599</p>
+                                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#destinoModal" data-destino="Cancún, México">Ver detalles</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="destination-card">
+                                                <img src="{{ url_for('static', filename='IMG/Madrid.jpg') }}" class="img-fluid" alt="Destino">
+                                                <div class="destination-info">
+                                                    <h5>Madrid, España</h5>
+                                                    <p>Desde $799</p>
+                                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#destinoModal" data-destino="Madrid, España">Ver detalles</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="destination-card">
+                                                <img src="{{ url_for('static', filename='IMG/Cancun.jpg') }}" class="img-fluid" alt="Destino">
+                                                <div class="destination-info">
+                                                    <h5>Tokio, Japón</h5>
+                                                    <p>Desde $1299</p>
+                                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#destinoModal" data-destino="Tokio, Japón">Ver detalles</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+<!-- Reservas Section -->
+<section id="reservas-section" class="content-section">
+    <div class="section-header">
+        <h3>Mis Reservas</h3>
+        <p>Gestiona todas tus reservas activas y pasadas</p>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="reservasTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="activas-tab" data-bs-toggle="tab" data-bs-target="#activas" type="button" role="tab" aria-controls="activas" aria-selected="true">Activas</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pasadas-tab" data-bs-toggle="tab" data-bs-target="#pasadas" type="button" role="tab" aria-controls="pasadas" aria-selected="false">Pasadas</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="canceladas-tab" data-bs-toggle="tab" data-bs-target="#canceladas" type="button" role="tab" aria-controls="canceladas" aria-selected="false">Canceladas</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content mt-3" id="reservasTabsContent">
+                <div class="tab-pane fade show active" id="activas" role="tabpanel" aria-labelledby="activas-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Destino</th>
+                                    <th>Fecha Viaje</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="active-reservations-table">
+                                <tr>
+                                    <td>RES-001</td>
+                                    <td>Cancún, México</td>
+                                    <td>15/05/2025 - 22/05/2025</td>
+                                    <td>$1,200</td>
+                                    <td><span class="badge bg-success">Confirmada</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#reservaModal" data-id="RES-001">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelarReservaModal" data-id="RES-001">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>RES-002</td>
+                                    <td>Madrid, España</td>
+                                    <td>10/07/2025 - 20/07/2025</td>
+                                    <td>$1,800</td>
+                                    <td><span class="badge bg-warning text-dark">Pendiente de pago</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#reservaModal" data-id="RES-002">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#pagarReservaModal" data-id="RES-002">
+                                            <i class="fas fa-credit-card"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="pasadas" role="tabpanel" aria-labelledby="pasadas-tab">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Destino</th>
+                                    <th>Fecha Viaje</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="past-reservations-table">
+                                <tr>
+                                    <td>RES-003</td>
+                                    <td>Roma, Italia</td>
+                                    <td>10/01/2025 - 17/01/2025</td>
+                                    <td>$1,500</td>
+                                    <td><span class="badge bg-secondary">Completada</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#reservaModal" data-id="RES-003">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#opinionModal" data-id="RES-003">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="canceladas" role="tabpanel" aria-labelledby="canceladas-tab">
+                    <div id="canceled-reservations-container">
+                        <p class="text-center my-4">No tienes reservas canceladas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Perfil Section -->
+<section id="perfil-section" class="content-section">
+    <div class="section-header">
+        <h3>Mi Perfil</h3>
+        <p>Actualiza tu información personal</p>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form id="update-profile-form">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="nombre" class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" value="Usuario Ejemplo">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email" value="usuario@email.com" readonly>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" value="1234567890">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion" value="Calle Ejemplo #123">
+                    </div>
+                </div>
+                
+                <hr>
+                <h5>Cambiar contraseña</h5>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="current-password" class="form-label">Contraseña actual</label>
+                        <input type="password" class="form-control" id="current-password" name="current-password">
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="new-password" class="form-label">Nueva contraseña</label>
+                        <input type="password" class="form-control" id="new-password" name="new-password">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="confirm-password" class="form-label">Confirmar nueva contraseña</label>
+                        <input type="password" class="form-control" id="confirm-password" name="confirm-password">
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="button" class="btn btn-secondary me-md-2" id="cancel-profile-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="save-profile-btn">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Buscar Section -->
+<section id="buscar-section" class="content-section">
+    <div class="section-header">
+        <h3>Buscar Viajes</h3>
+        <p>Encuentra tu próximo destino soñado</p>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-gradient">
+            <h5>Filtros de búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form id="search-form">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="destino" class="form-label">Destino</label>
+                        <select class="form-select" id="destino">
+                            <option value="" selected>Selecciona un destino</option>
+                            <option value="cancun">Cancún, México</option>
+                            <option value="madrid">Madrid, España</option>
+                            <option value="tokyo">Tokio, Japón</option>
+                            <option value="newyork">Nueva York, EEUU</option>
+                            <option value="paris">París, Francia</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fecha-salida" class="form-label">Fecha salida</label>
+                        <input type="date" class="form-control" id="fecha-salida">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fecha-regreso" class="form-label">Fecha regreso</label>
+                        <input type="date" class="form-control" id="fecha-regreso">
+                    </div>
+                </div>
+                
+                <div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                        <label for="pasajeros" class="form-label">Pasajeros</label>
+                        <input type="number" class="form-control" id="pasajeros" min="1" value="2">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="presupuesto" class="form-label">Presupuesto máximo</label>
+                        <input type="number" class="form-control" id="presupuesto" placeholder="$">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100" id="search-btn">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="search-results" class="search-results">
+        <div class="card">
+            <div class="card-header bg-gradient">
+                <h5>Paquetes disponibles</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="packages-container">
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="package-card">
+                            <div class="package-image">
+                                <img src="{{ url_for('static', filename='IMG/Cancun.jpg') }}" alt="Destino" class="img-fluid">
+                                <span class="package-badge">Recomendado</span>
+                            </div>
+                            <div class="package-details">
+                                <h5>Cancún Mágico</h5>
+                                <p class="package-description">7 días / 6 noches en hotel 5 estrellas todo incluido</p>
+                                <div class="package-features">
+                                    <span><i class="fas fa-hotel"></i> Hotel Gran Caribe</span>
+                                    <span><i class="fas fa-plane"></i> Vuelo directo</span>
+                                    <span><i class="fas fa-utensils"></i> Todo incluido</span>
+                                </div>
+                                <div class="package-footer">
+                                    <div class="package-price">
+                                        <span class="price">$1,299</span>
+                                        <span class="per-person">por persona</span>
+                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#packageModal" data-id="1">Ver detalles</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="package-card">
+                            <div class="package-image">
+                                <img src="{{ url_for('static', filename='IMG/Madrid.jpg') }}" alt="Destino" class="img-fluid">
+                                <span class="package-badge promo">15% OFF</span>
+                            </div>
+                            <div class="package-details">
+                                <h5>Madrid Cultural</h5>
+                                <p class="package-description">10 días / 9 noches con tour incluido</p>
+                                <div class="package-features">
+                                    <span><i class="fas fa-hotel"></i> Hotel Centro Madrid</span>
+                                    <span><i class="fas fa-plane"></i> Vuelo con escala</span>
+                                    <span><i class="fas fa-map-marked"></i> Tours incluidos</span>
+                                </div>
+                                <div class="package-footer">
+                                    <div class="package-price">
+                                        <span class="original-price">$1,699</span>
+                                        <span class="price">$1,445</span>
+                                        <span class="per-person">por persona</span>
+                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#packageModal" data-id="2">Ver detalles</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="package-card">
+                            <div class="package-image">
+                                <img src="{{ url_for('static', filename='IMG/Cancun.jpg') }}" alt="Destino" class="img-fluid">
+                            </div>
+                            <div class="package-details">
+                                <h5>Tokio Tradicional</h5>
+                                <p class="package-description">12 días / 11 noches con experiencia cultural</p>
+                                <div class="package-features">
+                                    <span><i class="fas fa-hotel"></i> Hotel Sakura Tokyo</span>
+                                    <span><i class="fas fa-plane"></i> Vuelo Premium</span>
+                                    <span><i class="fas fa-utensils"></i> Desayuno incluido</span>
+                                </div>
+                                <div class="package-footer">
+                                    <div class="package-price">
+                                        <span class="price">$2,499</span>
+                                        <span class="per-person">por persona</span>
+                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#packageModal" data-id="3">Ver detalles</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+</div>
+</div>
+
+<!-- Modales del Dashboard -->
+
+<!-- Modal de Detalle de Reserva -->
+<div class="modal fade" id="reservaModal" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservaModalLabel">Detalle de Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="reservation-details">
+                    <div class="reservation-header">
+                        <div>
+                            <h3>Cancún Mágico</h3>
+                            <p class="reservation-code">Código de reserva: <span>RES-001</span></p>
+                        </div>
+                        <div class="reservation-status">
+                            <span class="badge bg-success">Confirmada</span>
+                        </div>
+                    </div>
+                    
+                    <div class="reservation-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Detalles del viaje</h5>
+                                <ul class="details-list">
+                                    <li><i class="fas fa-map-marker-alt"></i> <strong>Destino:</strong> Cancún, México</li>
+                                    <li><i class="fas fa-calendar-alt"></i> <strong>Fecha de salida:</strong> 15/05/2025</li>
+                                    <li><i class="fas fa-calendar-check"></i> <strong>Fecha de regreso:</strong> 22/05/2025</li>
+                                    <li><i class="fas fa-users"></i> <strong>Pasajeros:</strong> 2 adultos</li>
+                                    <li><i class="fas fa-hotel"></i> <strong>Alojamiento:</strong> Hotel Gran Caribe Resort, Habitación Deluxe</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Detalles del pago</h5>
+                                <ul class="details-list">
+                                    <li><i class="fas fa-money-bill-wave"></i> <strong>Precio total:</strong> $1,200</li>
+                                    <li><i class="fas fa-credit-card"></i> <strong>Método de pago:</strong> Tarjeta terminada en 4242</li>
+                                    <li><i class="fas fa-check-circle"></i> <strong>Pagado el:</strong> 20/03/2025</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="reservation-timeline mt-4">
+                            <h5>Estado de la reserva</h5>
+                            <div class="timeline">
+                                <div class="timeline-item completed">
+                                    <div class="timeline-badge"><i class="fas fa-check"></i></div>
+                                    <div class="timeline-content">
+                                        <h6>Reserva creada</h6>
+                                        <p>20/03/2025 10:30</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item completed">
+                                    <div class="timeline-badge"><i class="fas fa-check"></i></div>
+                                    <div class="timeline-content">
+                                        <h6>Pago confirmado</h6>
+                                        <p>20/03/2025 10:35</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item completed">
+                                    <div class="timeline-badge"><i class="fas fa-check"></i></div>
+                                    <div class="timeline-content">
+                                        <h6>Reserva confirmada</h6>
+                                        <p>21/03/2025 09:15</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-badge"><i class="fas fa-clock"></i></div>
+                                    <div class="timeline-content">
+                                        <h6>Check-in disponible</h6>
+                                        <p>14/05/2025</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-badge"><i class="fas fa-plane"></i></div>
+                                    <div class="timeline-content">
+                                        <h6>Viaje</h6>
+                                        <p>15/05/2025 - 22/05/2025</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="download-voucher-btn">Descargar voucher</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Cancelar Reserva -->
+<div class="modal fade" id="cancelarReservaModal" tabindex="-1" aria-labelledby="cancelarReservaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="cancelarReservaModalLabel">Cancelar Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    <strong>Atención:</strong> Estás a punto de cancelar tu reserva. Por favor revisa nuestra política de cancelación.
+                </div>
+                
+                <h6>Política de cancelación:</h6>
+                <ul>
+                    <li>Cancelación con más de 30 días de anticipación: 85% de reembolso</li>
+                    <li>Cancelación con 15-30 días de anticipación: 50% de reembolso</li>
+                    <li>Cancelación con menos de 15 días de anticipación: Sin reembolso</li>
+                </ul>
+                
+                <p>Tu cancelación aplicaría para un <strong>85% de reembolso</strong> ($1,020).</p>
+                
+                <div class="mb-3">
+                    <label for="motivo-cancelacion" class="form-label">Motivo de la cancelación:</label>
+                    <select class="form-select" id="motivo-cancelacion">
+                        <option value="" selected>Selecciona un motivo</option>
+                        <option value="cambio-planes">Cambio de planes</option>
+                        <option value="emergencia">Emergencia personal/familiar</option>
+                        <option value="mejor-oferta">Encontré una mejor oferta</option>
+                        <option value="otro">Otro motivo</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="comentario-cancelacion" class="form-label">Comentarios adicionales:</label>
+                    <textarea class="form-control" id="comentario-cancelacion" rows="3"></textarea>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="confirm-cancelation">
+                    <label class="form-check-label" for="confirm-cancelation">
+                        Entiendo y acepto las condiciones de cancelación
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+                <button type="button" class="btn btn-danger" id="confirm-cancel-btn" disabled>Confirmar cancelación</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Pagar Reserva -->
+<div class="modal fade" id="pagarReservaModal" tabindex="-1" aria-labelledby="pagarReservaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="pagarReservaModalLabel">Completar Pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="payment-summary">
+                            <h5>Resumen de la reserva</h5>
+                            <ul class="summary-list">
+                                <li><strong>Destino:</strong> Madrid, España</li>
+                                <li><strong>Fecha:</strong> 10/07/2025 - 20/07/2025</li>
+                                <li><strong>Pasajeros:</strong> 2 adultos</li>
+                                <li><strong>Hotel:</strong> Hotel Centro Madrid</li>
+                                <li><strong>Habitación:</strong> Suite Junior</li>
+                            </ul>
+                            
+                            <div class="payment-total">
+                                <div class="d-flex justify-content-between">
+                                    <span>Subtotal:</span>
+                                    <span>$1,700</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Impuestos:</span>
+                                    <span>$100</span>
+                                </div>
+                                <div class="d-flex justify-content-between fw-bold total">
+                                    <span>Total a pagar:</span>
+                                    <span>$1,800</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>Información de pago</h5>
+                        <form id="payment-form">
+                            <div class="mb-3">
+                                <label for="card-name" class="form-label">Nombre en la tarjeta</label>
+                                <input type="text" class="form-control" id="card-name" placeholder="Nombre completo">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="card-number" class="form-label">Número de tarjeta</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="card-number" placeholder="1234 5678 9012 3456">
+                                    <span class="input-group-text">
+                                        <i class="fab fa-cc-visa"></i>
+                                        <i class="fab fa-cc-mastercard ms-1"></i>
+                                        <i class="fab fa-cc-amex ms-1"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="expiry-date" class="form-label">Fecha de expiración</label>
+                                    <input type="text" class="form-control" id="expiry-date" placeholder="MM/AA">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="cvv" placeholder="123">
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="save-card">
+                                <label class="form-check-label" for="save-card">
+                                    Guardar esta tarjeta para futuros pagos
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="complete-payment-btn">Pagar ahora</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Valoración -->
+<div class="modal fade" id="opinionModal" tabindex="-1" aria-labelledby="opinionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="opinionModalLabel">Valora tu experiencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h5>Roma, Italia</h5>
+                    <p class="text-muted">10/01/2025 - 17/01/2025</p>
+                    
+                    <div class="rating-stars mb-3">
+                        <span class="rating-text">Tu puntuación:</span>
+                        <div class="stars">
+                            <i class="far fa-star" data-rating="1"></i>
+                            <i class="far fa-star" data-rating="2"></i>
+                            <i class="far fa-star" data-rating="3"></i>
+                            <i class="far fa-star" data-rating="4"></i>
+                            <i class="far fa-star" data-rating="5"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="review-form">
+                    <div class="mb-3">
+                        <label for="opinion-title" class="form-label">Título de tu opinión</label>
+                        <input type="text" class="form-control" id="opinion-title" placeholder="Escribe un título para tu opinión">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="opinion-text" class="form-label">Tu opinión</label>
+                        <textarea class="form-control" id="opinion-text" rows="4" placeholder="Cuéntanos cómo fue tu experiencia..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label d-block">¿Qué aspectos destacarías?</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aspect-hotel">
+                                    <label class="form-check-label" for="aspect-hotel">Hotel</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aspect-location">
+                                    <label class="form-check-label" for="aspect-location">Ubicación</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aspect-food">
+                                    <label class="form-check-label" for="aspect-food">Gastronomía</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aspect-service">
+                                    <label class="form-check-label" for="aspect-service">Servicio</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aspect-activities">
+                                    <label class="form-check-label" for="aspect-activities">Actividades</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aspect-value">
+                                    <label class="form-check-label" for="aspect-value">Relación calidad-precio</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="photo-upload" class="form-label">Añadir fotos de tu viaje (opcional)</label>
+                        <input class="form-control" type="file" id="photo-upload" multiple>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="submit-review-btn">Enviar opinión</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalle de Paquete -->
+<div class="modal fade" id="packageModal" tabindex="-1" aria-labelledby="packageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="packageModalLabel">Detalles del Paquete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="package-detail-container">
+                    <div class="package-detail-header">
+                        <img src="{{ url_for('static', filename='IMG/Cancun.jpg') }}" alt="Destino" class="img-fluid">
+                        <div class="package-detail-title">
+                            <h3>Cancún Mágico</h3>
+                            <div class="package-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> Cancún, México</span>
+                                <span><i class="fas fa-calendar-alt"></i> 7 días / 6 noches</span>
+                                <span><i class="fas fa-star"></i> 4.8/5 (120 opiniones)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="package-detail-content">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="package-section">
+                                    <h4>Descripción</h4>
+                                    <p>Disfruta de unas vacaciones inolvidables en las paradisíacas playas de Cancún. Este paquete todo incluido te ofrece la combinación perfecta de relax, aventura y lujo en uno de los destinos más famosos del Caribe mexicano.</p>
+                                    <p>El Hotel Gran Caribe Resort 5 estrellas te recibirá con sus lujosas instalaciones frente al mar, múltiples piscinas, y una amplia variedad gastronómica para que disfrutes de la mejor experiencia todo incluido.</p>
+                                </div>
+                                
+                                <div class="package-section">
+                                    <h4>Incluye</h4>
+                                    <ul class="includes-list">
+                                        <li><i class="fas fa-plane"></i> Vuelos directos ida y vuelta</li>
+                                        <li><i class="fas fa-hotel"></i> 6 noches en Hotel Gran Caribe Resort 5*</li>
+                                        <li><i class="fas fa-utensils"></i> Régimen Todo Incluido</li>
+                                        <li><i class="fas fa-shuttle-van"></i> Traslados aeropuerto-hotel-aeropuerto</li>
+                                        <li><i class="fas fa-umbrella-beach"></i> Acceso ilimitado a instalaciones del resort</li>
+                                        <li><i class="fas fa-cocktail"></i> Bebidas premium ilimitadas</li>
+                                        <li><i class="fas fa-water"></i> Una excursión a elegir (snorkel, tour cultural o parque temático)</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="package-section">
+                                    <h4>Itinerario</h4>
+                                    <div class="itinerary">
+                                        <div class="itinerary-day">
+                                            <div class="day-number">Día 1</div>
+                                            <div class="day-content">
+                                                <h6>Llegada a Cancún</h6>
+                                                <p>Recepción en el aeropuerto y traslado al hotel. Check-in y tiempo libre para disfrutar de las instalaciones.</p>
+                                            </div>
+                                        </div>
+                                        <div class="itinerary-day">
+                                            <div class="day-number">Día 2</div>
+                                            <div class="day-content">
+                                                <h6>Día de playa</h6>
+                                                <p>Disfruta de las hermosas playas de arena blanca y aguas turquesas del Caribe mexicano.</p>
+                                            </div>
+                                        </div>
+                                        <div class="itinerary-day">
+                                            <div class="day-number">Día 3</div>
+                                            <div class="day-content">
+                                                <h6>Excursión incluida</h6>
+                                                <p>Disfruta de una excursión a elegir entre snorkel en arrecife, tour cultural a Chichén Itzá o visita a parque temático.</p>
+                                            </div>
+                                        </div>
+                                        <div class="itinerary-day">
+                                            <div class="day-number">Días 4-6</div>
+                                            <div class="day-content">
+                                                <h6>Actividades libres</h6>
+                                                <p>Tiempo libre para disfrutar de las instalaciones del resort, actividades acuáticas o excursiones opcionales.</p>
+                                            </div>
+                                        </div>
+                                        <div class="itinerary-day">
+                                            <div class="day-number">Día 7</div>
+                                            <div class="day-content">
+                                                <h6>Regreso</h6>
+                                                <p>Check-out del hotel y traslado al aeropuerto para tomar el vuelo de regreso.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="package-booking-card">
+                                    <div class="price-section">
+                                        <div class="current-price">$1,299</div>
+                                        <div class="per-person">por persona en habitación doble</div>
+                                    </div>
+                                    
+                                    <form id="booking-form">
+                                        <div class="mb-3">
+                                            <label for="booking-date" class="form-label">Fecha de salida</label>
+                                            <select class="form-select" id="booking-date">
+                                                <option value="15-05-2025">15 Mayo 2025</option>
+                                                <option value="01-06-2025">1 Junio 2025</option>
+                                                <option value="15-06-2025">15 Junio 2025</option>
+                                                <option value="01-07-2025">1 Julio 2025</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="booking-passengers" class="form-label">Pasajeros</label>
+                                            <div class="input-group">
+                                                <button class="btn btn-outline-secondary" type="button" id="decrease-passengers">-</button>
+                                                <input type="number" class="form-control text-center" id="booking-passengers" value="2" min="1" max="10">
+                                                <button class="btn btn-outline-secondary" type="button" id="increase-passengers">+</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="booking-room" class="form-label">Tipo de habitación</label>
+                                            <select class="form-select" id="booking-room">
+                                                <option value="standard">Habitación Estándar</option>
+                                                <option value="deluxe">Habitación Deluxe (+$100)</option>
+                                                <option value="suite">Suite Junior (+$250)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="extras-section mb-3">
+                                            <p class="fw-bold">Extras opcionales:</p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="extra-insurance">
+                                                <label class="form-check-label" for="extra-insurance">
+                                                    Seguro de cancelación (+$49)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="extra-tours">
+                                                <label class="form-check-label" for="extra-tours">
+                                                    Pack de excursiones (+$199)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="extra-premium">
+                                                <label class="form-check-label" for="extra-premium">
+                                                    Upgrade servicio premium (+$150)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="total-section mb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Subtotal:</span>
+                                                <span>$2,598</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span>Impuestos:</span>
+                                                <span>$180</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between total">
+                                                <span>Total:</span>
+                                                <span>$2,778</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="button" class="btn btn-primary w-100" id="reserve-now-btn">Reservar ahora</button>
+                                    </form>
+                                    
+                                    <div class="booking-info mt-3">
+                                        <p class="small"><i class="fas fa-info-circle"></i> Paga solo el 25% ahora y el resto 30 días antes del viaje</p>
+                                        <p class="small"><i class="fas fa-shield-alt"></i> Cancelación gratuita hasta 45 días antes</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts necesarios -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js"></script>
+<script src="{{ url_for('static', filename='js/cliente.js') }}"></script>

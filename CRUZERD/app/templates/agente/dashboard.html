@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUZERD - Dashboard de Agente</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='IMG/logo-1.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/agent_dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='IMG/logo-1.png') }}" alt="CRUZERD Logo" class="logo">
+                <h3>CRUZERD</h3>
+            </div>
+            <div class="agent-profile">
+                <div class="agent-avatar">
+                    <img src="{{ url_for('static', filename='IMG/avatar.png') }}" alt="Agente" class="avatar-img">
+                </div>
+                <div class="agent-info">
+                    <h4>{{ agente_actual.nombre }}</h4>
+                    <p>ID: {{ agente_actual.codigo_empleado }}</p>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#dashboard-section"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#clientes-section"><i class="fas fa-users"></i> Clientes</a></li>
+                <li><a href="#reservas-section"><i class="fas fa-calendar-check"></i> Reservas</a></li>
+                <li><a href="#paquetes-section"><i class="fas fa-box"></i> Paquetes</a></li>
+                <li><a href="#promociones-section"><i class="fas fa-percent"></i> Promociones</a></li>
+                <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar reservaciones, clientes...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-actions">
+                    <div class="notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="date-time">
+                        <span id="current-date">{{ current_date }}</span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Dashboard Summary Section -->
+            <section id="dashboard-section" class="content-section">
+                <div class="section-header">
+                    <h2>Panel de Control</h2>
+                    <p>Bienvenido al sistema de administración de CRUZERD</p>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-card-icon bg-primary">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h4>{{ stats.reservas_activas }}</h4>
+                            <p>Reservas Activas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon bg-success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h4>{{ stats.clientes_asignados }}</h4>
+                            <p>Clientes Asignados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon bg-warning">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h4>${{ stats.ventas_mes|format_currency }}</h4>
+                            <p>Ventas del Mes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon bg-danger">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-card-info">
+                            <h4>{{ stats.pendientes_confirmacion }}</h4>
+                            <p>Pendientes Confirmación</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-containers">
+                    <div class="chart-card">
+                        <h3>Reservas por Destino</h3>
+                        <canvas id="destinos-chart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Ventas Mensuales</h3>
+                        <canvas id="ventas-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>Actividad Reciente</h3>
+                    <div class="activity-list">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                {% if activity.type == 'reserva' %}
+                                <i class="fas fa-calendar-check"></i>
+                                {% elif activity.type == 'cliente' %}
+                                <i class="fas fa-user-plus"></i>
+                                {% elif activity.type == 'pago' %}
+                                <i class="fas fa-money-bill"></i>
+                                {% endif %}
+                            </div>
+                            <div class="activity-details">
+                                <p>{{ activity.description }}</p>
+                                <span class="activity-time">{{ activity.time }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Clients Section -->
+            <section id="clientes-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Clientes</h2>
+                    <button class="add-button" data-bs-toggle="modal" data-bs-target="#addClienteModal">
+                        <i class="fas fa-plus"></i> Nuevo Cliente
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Dirección</th>
+                                <th>Reservas</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in clientes %}
+                            <tr>
+                                <td>{{ cliente.id }}</td>
+                                <td>{{ cliente.nombre }}</td>
+                                <td>{{ cliente.email }}</td>
+                                <td>{{ cliente.telefono }}</td>
+                                <td>{{ cliente.direccion }}</td>
+                                <td>{{ cliente.reservas_count }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewClienteModal" data-cliente-id="{{ cliente.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editClienteModal" data-cliente-id="{{ cliente.id }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#newReservaModal" data-cliente-id="{{ cliente.id }}">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reservations Section -->
+            <section id="reservas-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Reservas</h2>
+                    <div class="filter-controls">
+                        <select id="reserva-estado-filter" class="form-select">
+                            <option value="">Todos los estados</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="confirmada">Confirmada</option>
+                            <option value="pagada">Pagada</option>
+                            <option value="cancelada">Cancelada</option>
+                        </select>
+                        <button class="add-button" data-bs-toggle="modal" data-bs-target="#newReservaModal">
+                            <i class="fas fa-plus"></i> Nueva Reserva
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Cliente</th>
+                                <th>Paquete</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Precio Total</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reserva in reservas %}
+                            <tr class="estado-{{ reserva.estado }}">
+                                <td>{{ reserva.codigo_reserva }}</td>
+                                <td>{{ reserva.cliente_nombre }}</td>
+                                <td>{{ reserva.paquete_nombre }}</td>
+                                <td>{{ reserva.fecha_inicio }}</td>
+                                <td>{{ reserva.fecha_fin }}</td>
+                                <td>${{ reserva.precio_total|format_currency }}</td>
+                                <td>
+                                    <span class="badge estado-{{ reserva.estado }}">{{ reserva.estado|capitalize }}</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#viewReservaModal" data-reserva-id="{{ reserva.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editReservaModal" data-reserva-id="{{ reserva.id }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#pagoReservaModal" data-reserva-id="{{ reserva.id }}">
+                                        <i class="fas fa-credit-card"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" onclick="generateVoucher({{ reserva.id }})">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+<!-- Packages Section -->
+<section id="paquetes-section" class="content-section">
+    <div class="section-header">
+        <h2>Catálogo de Paquetes</h2>
+        <div class="filter-controls">
+            <input type="text" id="paquete-search" class="form-control" placeholder="Buscar destino...">
+            <select id="paquete-filter" class="form-select">
+                <option value="">Todos los destinos</option>
+                {% for destino in destinos %}
+                <option value="{{ destino }}">{{ destino }}</option>
+                {% endfor %}
+            </select>
+            <input type="date" id="fecha-filter" class="form-control">
+            <select id="precio-filter" class="form-select">
+                <option value="">Cualquier precio</option>
+                <option value="0-500">$0 - $500</option>
+                <option value="500-1000">$500 - $1000</option>
+                <option value="1000-2000">$1000 - $2000</option>
+                <option value="2000+">$2000+</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="paquetes-grid">
+        {% for paquete in paquetes %}
+        <div class="paquete-card" data-destino="{{ paquete.destino }}" data-precio="{{ paquete.precio }}">
+            <div class="paquete-img" style="background-image: url('{{ url_for('static', filename='images/paquetes/' + paquete.imagen) }}');">
+                {% if paquete.promocion %}
+                <div class="promocion-badge">{{ paquete.promocion.porcentaje_descuento }}% OFF</div>
+                {% endif %}
+            </div>
+            <div class="paquete-info">
+                <h4>{{ paquete.nombre }}</h4>
+                <p class="paquete-destino"><i class="fas fa-map-marker-alt"></i> {{ paquete.destino }}</p>
+                <p class="paquete-duracion"><i class="fas fa-clock"></i> {{ paquete.duracion }} días</p>
+                <div class="paquete-precio">
+                    {% if paquete.promocion %}
+                    <p class="precio-original">${{ paquete.precio|format_currency }}</p>
+                    <p class="precio-promo">${{ paquete.precio_promo|format_currency }}</p>
+                    {% else %}
+                    <p>${{ paquete.precio|format_currency }}</p>
+                    {% endif %}
+                </div>
+                <div class="paquete-actions">
+                    <button class="btn btn-sm btn-info view-paquete" data-bs-toggle="modal" data-bs-target="#viewPaqueteModal" data-paquete-id="{{ paquete.id }}">
+                        <i class="fas fa-eye"></i> Detalles
+                    </button>
+                    <button class="btn btn-sm btn-success reservar-paquete" data-bs-toggle="modal" data-bs-target="#newReservaModal" data-paquete-id="{{ paquete.id }}">
+                        <i class="fas fa-calendar-plus"></i> Reservar
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Promotions Section -->
+<section id="promociones-section" class="content-section">
+    <div class="section-header">
+        <h2>Promociones Activas</h2>
+        <p>Ofertas especiales para ofrecer a tus clientes</p>
+    </div>
+    
+    <div class="promociones-grid">
+        {% for promocion in promociones %}
+        <div class="promocion-card">
+            <div class="promocion-header">
+                <h4>{{ promocion.nombre }}</h4>
+                <div class="promocion-badge">{{ promocion.porcentaje_descuento }}% OFF</div>
+            </div>
+            <div class="promocion-img" style="background-image: url('{{ url_for('static', filename='images/promociones/' + promocion.imagen) }}');"></div>
+            <div class="promocion-info">
+                <p>{{ promocion.descripcion }}</p>
+                <p><i class="fas fa-calendar-alt"></i> Válido: {{ promocion.fecha_inicio }} - {{ promocion.fecha_fin }}</p>
+                <div class="promocion-paquete">
+                    <p><strong>Paquete:</strong> {{ promocion.paquete_nombre }}</p>
+                    <p class="precio-original">${{ promocion.precio_original|format_currency }}</p>
+                    <p class="precio-promo">${{ promocion.precio_final|format_currency }}</p>
+                </div>
+                <button class="btn btn-primary reservar-promo" data-bs-toggle="modal" data-bs-target="#newReservaModal" 
+                        data-paquete-id="{{ promocion.paquete_id }}" data-promocion-id="{{ promocion.id }}">
+                    <i class="fas fa-calendar-plus"></i> Reservar Ahora
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+</main>
+</div>
+
+<!-- MODALS -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+<!-- Add Cliente Modal -->
+<div class="modal fade" id="addClienteModal" tabindex="-1" aria-labelledby="addClienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addClienteModalLabel">Nuevo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addClienteForm" action="{{ url_for('agente.add_cliente') }}" method="POST">
+                    {{ form.hidden_tag() }}  <!-- CSRF Token -->
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre Completo</label>
+                        {{ form.nombre(class="form-control") }}  <!-- Usamos el campo de Flask-WTF -->
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        {{ form.email(class="form-control") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        {{ form.password(class="form-control") }}  <!-- Campo para la contraseña -->
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        {{ form.telefono(class="form-control") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        {{ form.direccion(class="form-control", rows="3") }}
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Cliente Modal -->
+<div class="modal fade" id="editClienteModal" tabindex="-1" aria-labelledby="editClienteModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="editClienteModalLabel">Editar Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="editClienteForm" action="{{ url_for('agente.edit_cliente') }}" method="POST">
+            <input type="hidden" id="edit_cliente_id" name="cliente_id">
+            <div class="mb-3">
+                <label for="edit_nombre" class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="edit_nombre" name="nombre" required>
+            </div>
+            <div class="mb-3">
+                <label for="edit_email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="edit_email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="edit_telefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="edit_telefono" name="telefono">
+            </div>
+            <div class="mb-3">
+                <label for="edit_direccion" class="form-label">Dirección</label>
+                <textarea class="form-control" id="edit_direccion" name="direccion" rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Actualizar Cliente</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- View Cliente Modal -->
+<div class="modal fade" id="viewClienteModal" tabindex="-1" aria-labelledby="viewClienteModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="viewClienteModalLabel">Detalles del Cliente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div id="cliente-details">
+            <!-- Populated via AJAX -->
+        </div>
+        <div id="cliente-reservas">
+            <h5>Historial de Reservas</h5>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Paquete</th>
+                        <th>Fechas</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="cliente-reservas-body">
+                    <!-- Populated via AJAX -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="edit-cliente-btn">Editar Cliente</button>
+        <button type="button" class="btn btn-success" id="nueva-reserva-cliente-btn">Nueva Reserva</button>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- New Reserva Modal -->
+<div class="modal fade" id="newReservaModal" tabindex="-1" aria-labelledby="newReservaModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="newReservaModalLabel">Nueva Reserva</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div class="progress mb-4">
+            <div class="progress-bar" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">Paso 1 de 3</div>
+        </div>
+        <form id="newReservaForm" action="{{ url_for('agente.create_reserva') }}" method="POST">
+            <!-- Step 1: Cliente & Paquete -->
+            <div class="reserva-step" id="step1">
+                <div class="mb-3">
+                    <label for="cliente_id" class="form-label">Cliente</label>
+                    <select class="form-select" id="cliente_id" name="cliente_id" required>
+                        <option value="">Seleccione un cliente</option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nombre }} ({{ cliente.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="paquete_id" class="form-label">Paquete</label>
+                    <select class="form-select" id="paquete_id" name="paquete_id" required>
+                        <option value="">Seleccione un paquete</option>
+                        {% for paquete in paquetes %}
+                        <option value="{{ paquete.id }}" data-precio="{{ paquete.precio }}">{{ paquete.nombre }} - ${{ paquete.precio }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                    <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                    <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+                </div>
+            </div>
+            
+            <!-- Step 2: Selección de Habitación y Vuelo -->
+            <div class="reserva-step" id="step2" style="display: none;">
+                <div class="mb-3">
+                    <h5>Detalles de Alojamiento</h5>
+                    <div id="habitaciones-disponibles">
+                        <!-- Populated via AJAX -->
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h5>Detalles de Vuelo</h5>
+                    <div id="vuelos-disponibles">
+                        <!-- Populated via AJAX -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Confirmación y Pago -->
+            <div class="reserva-step" id="step3" style="display: none;">
+                <div class="resumen-reserva">
+                    <h5>Resumen de la Reserva</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="reserva-resumen" id="reserva-resumen">
+                                <!-- Populated via JavaScript -->
+                            </div>
+                            
+                            <div class="reserva-total mt-3">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Subtotal:</td>
+                                        <td id="subtotal">$0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Impuestos (16%):</td>
+                                        <td id="impuestos">$0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total:</strong></td>
+                                        <td id="total"><strong>$0.00</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metodo-pago mt-4">
+                    <h5>Método de Pago</h5>
+                    <div class="mb-3">
+                        <select class="form-select" id="metodo_pago" name="metodo_pago" required>
+                            <option value="">Seleccione método de pago</option>
+                            <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                            <option value="transferencia">Transferencia Bancaria</option>
+                            <option value="efectivo">Efectivo</option>
+                        </select>
+                    </div>
+                    
+                    <div id="tarjeta-details" style="display: none;">
+                        <div class="mb-3">
+                            <label for="num_tarjeta" class="form-label">Número de Tarjeta</label>
+                            <input type="text" class="form-control" id="num_tarjeta" name="num_tarjeta" placeholder="XXXX XXXX XXXX XXXX">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="fecha_exp" class="form-label">Fecha de Expiración</label>
+                                <input type="text" class="form-control" id="fecha_exp" name="fecha_exp" placeholder="MM/AA">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" placeholder="XXX">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="hidden" name="precio_total" id="precio_total_input">
+            <input type="hidden" name="habitacion_id" id="habitacion_id_input">
+            <input type="hidden" name="vuelo_id" id="vuelo_id_input">
+            <input type="hidden" name="promocion_id" id="promocion_id_input">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-prev" style="display: none;">Anterior</button>
+                <button type="button" class="btn btn-primary" id="btn-next">Siguiente</button>
+                <button type="submit" class="btn btn-success" id="btn-submit" style="display: none;">Confirmar Reserva</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- View Paquete Modal -->
+<div class="modal fade" id="viewPaqueteModal" tabindex="-1" aria-labelledby="viewPaqueteModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="viewPaqueteModalLabel">Detalles del Paquete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div id="paquete-details">
+            <!-- Populated via AJAX -->
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-success" id="reservar-este-paquete-btn">Reservar este Paquete</button>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- View Reserva Modal -->
+<div class="modal fade" id="viewReservaModal" tabindex="-1" aria-labelledby="viewReservaModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="viewReservaModalLabel">Detalles de la Reserva</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div id="reserva-details">
+            <!-- Populated via AJAX -->
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="edit-reserva-btn">Editar Reserva</button>
+        <button type="button" class="btn btn-success" id="generar-voucher-btn">Generar Voucher</button>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Edit Reserva Modal -->
+<div class="modal fade" id="editReservaModal" tabindex="-1" aria-labelledby="editReservaModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="editReservaModalLabel">Editar Reserva</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="editReservaForm" action="{{ url_for('agente.edit_reserva') }}" method="POST">
+            <input type="hidden" id="edit_reserva_id" name="reserva_id">
+            
+            <div class="mb-3">
+                <label for="edit_estado" class="form-label">Estado</label>
+                <select class="form-select" id="edit_estado" name="estado" required>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="pagada">Pagada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="edit_fecha_inicio" class="form-label">Fecha de Inicio</label>
+                <input type="date" class="form-control" id="edit_fecha_inicio" name="fecha_inicio" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="edit_fecha_fin" class="form-label">Fecha de Fin</label>
+                <input type="date" class="form-control" id="edit_fecha_fin" name="fecha_fin" required>
+            </div>
+            
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Actualizar Reserva</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Pago Reserva Modal -->
+<div class="modal fade" id="pagoReservaModal" tabindex="-1" aria-labelledby="pagoReservaModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="pagoReservaModalLabel">Registrar Pago</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <form id="pagoReservaForm" action="{{ url_for('agente.registrar_pago') }}" method="POST">
+            <input type="hidden" id="pago_reserva_id" name="reserva_id">
+            
+            <div class="mb-3">
+                <label for="monto" class="form-label">Monto</label>
+                <input type="number" step="0.01" class="form-control" id="monto" name="monto" required>
+            </div>
+            
+            <div class="mb-3">
+                <label for="metodo" class="form-label">Método de Pago</label>
+                <select class="form-select" id="metodo" name="metodo" required>
+                    <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                    <option value="transferencia">Transferencia Bancaria</option>
+                    <option value="efectivo">Efectivo</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="referencia" class="form-label">Referencia</label>
+                <input type="text" class="form-control" id="referencia" name="referencia">
+            </div>
+            
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registrar Pago</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="{{ url_for('static', filename='js/agent_dashboard.js') }}"></script>
+</body>
+</html>

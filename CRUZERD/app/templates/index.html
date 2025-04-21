@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUZERD - Tu Agencia de Viajes de Confianza</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='IMG/logo-1.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('static', filename='IMG/logo.png') }}">
+                <span class="brand-text">CRUZERD</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#">Inicio</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownVuelos" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">Vuelos</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownVuelos">
+                            <li><a class="dropdown-item" href="#">Vuelos Nacionales</a></li>
+                            <li><a class="dropdown-item" href="#">Vuelos Internacionales</a></li>
+                            <li><a class="dropdown-item" href="#">Ofertas Especiales</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownHoteles" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">Hoteles</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownHoteles">
+                            <li><a class="dropdown-item" href="#">Hoteles Nacionales</a></li>
+                            <li><a class="dropdown-item" href="#">Hoteles Internacionales</a></li>
+                            <li><a class="dropdown-item" href="#">Resorts & Spa</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPaquetes" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">Paquetes</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownPaquetes">
+                            <li><a class="dropdown-item" href="#">Todo Incluido</a></li>
+                            <li><a class="dropdown-item" href="#">Lunas de Miel</a></li>
+                            <li><a class="dropdown-item" href="#">Vacaciones Familiares</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#">Promociones</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <a href="#" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="fas fa-user me-1"></i> Iniciar Sesión
+                    </a>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-phone-alt me-1"></i> + 57 322 7813 912
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section con Video de Fondo -->
+    <section class="hero-section">
+        <div class="hero-video-container">
+            <video autoplay muted loop class="hero-video">
+                <source src="{{ url_for('static', filename='IMG/VIDEO.mp4') }}" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="container hero-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center text-white">
+                    <h1 class="display-3 fw-bold animate__animated animate__fadeInDown">
+                        El mundo te espera, <span class="text-primary">viaja con CRUZERD</span>
+                    </h1>
+                    <p class="lead mt-3 mb-5 animate__animated animate__fadeInUp">
+                        Descubre destinos increíbles y vive experiencias inolvidables con nuestros paquetes personalizados
+                    </p>
+                    <a href="#search-section" class="btn btn-primary btn-lg px-5 py-3 animate__animated animate__fadeInUp animate__delay-1s">
+                        <i class="fas fa-search me-2"></i>Buscar Ahora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Buscador de Vuelos -->
+    <section id="search-section" class="py-5 bg-light">
+        <div class="container">
+            <div class="search-container">
+                <ul class="nav nav-tabs" id="searchTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="flights-tab" data-bs-toggle="tab" data-bs-target="#flights" type="button" role="tab" aria-controls="flights" aria-selected="true">
+                            <i class="fas fa-plane me-2"></i>Vuelos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="hotels-tab" data-bs-toggle="tab" data-bs-target="#hotels" type="button" role="tab" aria-controls="hotels" aria-selected="false">
+                            <i class="fas fa-hotel me-2"></i>Hoteles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="packages-tab" data-bs-toggle="tab" data-bs-target="#packages" type="button" role="tab" aria-controls="packages" aria-selected="false">
+                            <i class="fas fa-suitcase me-2"></i>Paquetes
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content p-4 bg-white shadow-sm rounded-bottom" id="searchTabsContent">
+                    <!-- Pestaña de Vuelos -->
+                    <div class="tab-pane fade show active" id="flights" role="tabpanel" aria-labelledby="flights-tab">
+                        <form>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="trip-type" id="roundtrip" checked>
+                                        <label class="btn btn-outline-primary" for="roundtrip">Ida y Vuelta</label>
+                                        
+                                        <input type="radio" class="btn-check" name="trip-type" id="oneway">
+                                        <label class="btn btn-outline-primary" for="oneway">Solo Ida</label>
+                                        
+                                        <input type="radio" class="btn-check" name="trip-type" id="multicity">
+                                        <label class="btn btn-outline-primary" for="multicity">Multi-Destino</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="origin" class="form-label">Origen</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-plane-departure"></i></span>
+                                        <input type="text" class="form-control" id="origin" placeholder="¿De dónde sales?">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="destination" class="form-label">Destino</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-plane-arrival"></i></span>
+                                        <input type="text" class="form-control" id="destination" placeholder="¿A dónde vas?">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="departure-date" class="form-label">Fecha de Ida</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                        <input type="date" class="form-control" id="departure-date" value="2025-05-10">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="return-date" class="form-label">Fecha de Regreso</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                        <input type="date" class="form-control" id="return-date" value="2025-05-17">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="passengers" class="form-label">Pasajeros</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                        <select class="form-select" id="passengers">
+                                            <option value="1">1 Adulto</option>
+                                            <option value="2" selected>2 Adultos</option>
+                                            <option value="3">3 Adultos</option>
+                                            <option value="4">4 Adultos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label for="class" class="form-label">Clase</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-chair"></i></span>
+                                        <select class="form-select" id="class">
+                                            <option value="economy" selected>Económica</option>
+                                            <option value="premium">Premium Economy</option>
+                                            <option value="business">Business</option>
+                                            <option value="first">Primera Clase</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mt-4 text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                                        <i class="fas fa-search me-2"></i>Buscar Vuelos
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+<!-- Pestaña de Hoteles -->
+<div class="tab-pane fade" id="hotels" role="tabpanel" aria-labelledby="hotels-tab">
+    <form>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="hotel-destination" class="form-label">Destino</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    <input type="text" class="form-control" id="hotel-destination" placeholder="Ciudad, región o hotel">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="check-in" class="form-label">Check-in</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
+                    <input type="date" class="form-control" id="check-in" value="2025-05-10">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="check-out" class="form-label">Check-out</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
+                    <input type="date" class="form-control" id="check-out" value="2025-05-17">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="rooms" class="form-label">Habitaciones</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-door-open"></i></span>
+                    <select class="form-select" id="rooms">
+                        <option value="1" selected>1 Habitación</option>
+                        <option value="2">2 Habitaciones</option>
+                        <option value="3">3 Habitaciones</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="adults" class="form-label">Adultos</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <select class="form-select" id="adults">
+                        <option value="1">1 Adulto</option>
+                        <option value="2" selected>2 Adultos</option>
+                        <option value="3">3 Adultos</option>
+                        <option value="4">4 Adultos</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="children" class="form-label">Niños</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-child"></i></span>
+                    <select class="form-select" id="children">
+                        <option value="0" selected>Sin niños</option>
+                        <option value="1">1 Niño</option>
+                        <option value="2">2 Niños</option>
+                        <option value="3">3 Niños</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="hotel-class" class="form-label">Categoría</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-star"></i></span>
+                    <select class="form-select" id="hotel-class">
+                        <option value="any" selected>Cualquiera</option>
+                        <option value="3">3 estrellas o más</option>
+                        <option value="4">4 estrellas o más</option>
+                        <option value="5">Solo 5 estrellas</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-12 mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-search me-2"></i>Buscar Hoteles
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Pestaña de Paquetes -->
+<div class="tab-pane fade" id="packages" role="tabpanel" aria-labelledby="packages-tab">
+    <form>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="package-origin" class="form-label">Origen</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-plane-departure"></i></span>
+                    <input type="text" class="form-control" id="package-origin" placeholder="¿De dónde sales?">
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="package-destination" class="form-label">Destino</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    <input type="text" class="form-control" id="package-destination" placeholder="¿A dónde vas?">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="package-departure" class="form-label">Fecha de Ida</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                    <input type="date" class="form-control" id="package-departure" value="2025-05-10">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="package-return" class="form-label">Fecha de Regreso</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    <input type="date" class="form-control" id="package-return" value="2025-05-17">
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="package-adults" class="form-label">Adultos</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    <select class="form-select" id="package-adults">
+                        <option value="1">1 Adulto</option>
+                        <option value="2" selected>2 Adultos</option>
+                        <option value="3">3 Adultos</option>
+                        <option value="4">4 Adultos</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <label for="package-children" class="form-label">Niños</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-child"></i></span>
+                    <select class="form-select" id="package-children">
+                        <option value="0" selected>Sin niños</option>
+                        <option value="1">1 Niño</option>
+                        <option value="2">2 Niños</option>
+                        <option value="3">3 Niños</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-12">
+                <label for="package-type" class="form-label">Tipo de Paquete</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-suitcase"></i></span>
+                    <select class="form-select" id="package-type">
+                        <option value="all" selected>Todos los paquetes</option>
+                        <option value="all-inclusive">Todo Incluido</option>
+                        <option value="honeymoon">Luna de Miel</option>
+                        <option value="family">Familiar</option>
+                        <option value="adventure">Aventura</option>
+                        <option value="cultural">Cultural</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-12 mt-4 text-center">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-search me-2"></i>Buscar Paquetes
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Ofertas Especiales -->
+<section class="py-5">
+<div class="container">
+<div class="row mb-4">
+<div class="col-12 text-center">
+<h2 class="section-title">Ofertas Especiales</h2>
+<p class="section-subtitle">Aprovecha nuestras promociones por tiempo limitado</p>
+</div>
+</div>
+
+<div class="special-offers-slider">
+<!-- Oferta 1 -->
+<div class="offer-card">
+<div class="card h-100 border-0 shadow-sm">
+    <div class="position-relative">
+        <img src="{{ url_for('static', filename='IMG/Cancun.jpg') }}" alt="Cancún" class="card-img-top">
+        <div class="offer-badge">-30%</div>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="d-flex align-items-center">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+            </span>
+            <span class="badge bg-primary">Todo Incluido</span>
+        </div>
+        <h5 class="card-title">Cancún, México</h5>
+        <p class="card-text">Disfruta 7 noches en el paraíso caribeño con vuelos incluidos</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-decoration-line-through text-muted">$2,500</span>
+                <span class="fs-4 fw-bold text-primary ms-2">$1,750</span>
+                <span class="text-muted">por persona</span>
+            </div>
+            <a href="#" class="btn btn-outline-primary">Ver Oferta</a>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Oferta 2 -->
+<div class="offer-card">
+<div class="card h-100 border-0 shadow-sm">
+    <div class="position-relative">
+        <img src="{{ url_for('static', filename='IMG/New york.jpg') }}" alt="Nueva York" class="card-img-top">
+        <div class="offer-badge">-25%</div>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="d-flex align-items-center">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="far fa-star text-warning"></i>
+            </span>
+            <span class="badge bg-info">Vuelo + Hotel</span>
+        </div>
+        <h5 class="card-title">Nueva York, EE.UU.</h5>
+        <p class="card-text">La Gran Manzana te espera con esta oferta de 5 días inolvidables</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-decoration-line-through text-muted">$1,800</span>
+                <span class="fs-4 fw-bold text-primary ms-2">$1,350</span>
+                <span class="text-muted">por persona</span>
+            </div>
+            <a href="#" class="btn btn-outline-primary">Ver Oferta</a>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Oferta 3 -->
+<div class="offer-card">
+<div class="card h-100 border-0 shadow-sm">
+    <div class="position-relative">
+        <img src="{{ url_for('static', filename='IMG/Cartagena.jpg') }}" alt="Cartagena" class="card-img-top">
+        <div class="offer-badge">-20%</div>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="d-flex align-items-center">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star-half-alt text-warning"></i>
+            </span>
+            <span class="badge bg-success">Promoción Nacional</span>
+        </div>
+        <h5 class="card-title">Cartagena, Colombia</h5>
+        <p class="card-text">Ciudad histórica y playas paradisíacas en un paquete de 4 noches</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-decoration-line-through text-muted">$1,200</span>
+                <span class="fs-4 fw-bold text-primary ms-2">$960</span>
+                <span class="text-muted">por persona</span>
+            </div>
+            <a href="#" class="btn btn-outline-primary">Ver Oferta</a>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Oferta 4 -->
+<div class="offer-card">
+<div class="card h-100 border-0 shadow-sm">
+    <div class="position-relative">
+        <img src="{{ url_for('static', filename='IMG/Madrid.jpg') }}" alt="Madrid" class="card-img-top">
+        <div class="offer-badge">-35%</div>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="d-flex align-items-center">
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+                <i class="fas fa-star text-warning"></i>
+            </span>
+            <span class="badge bg-danger">Last Minute</span>
+        </div>
+        <h5 class="card-title">Madrid, España</h5>
+        <p class="card-text">Cultura, gastronomía y diversión en la capital española por 10 días</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-decoration-line-through text-muted">$2,800</span>
+                <span class="fs-4 fw-bold text-primary ms-2">$1,820</span>
+                <span class="text-muted">por persona</span>
+            </div>
+            <a href="#" class="btn btn-outline-primary">Ver Oferta</a>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Destinos Recomendados -->
+<section class="py-5 bg-light">
+<div class="container">
+<div class="row mb-4">
+<div class="col-12 text-center">
+<h2 class="section-title">Recomendados CRUZERD</h2>
+<p class="section-subtitle">Variedad de ofertas y destinos seleccionados para usted</p>
+</div>
+</div>
+
+<div class="row g-4">
+<!-- Tarjeta 1 -->
+<div class="col-md-6 col-lg-4">
+<div class="destination-card">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="position-relative overflow-hidden">
+            <img src="{{ url_for('static', filename='IMG/Baru.jpg') }}" alt="Barú" class="card-img-top destination-img">
+            <div class="destination-overlay">
+                <h3 class="text-white mb-0">Reconecte con la naturaleza</h3>
+                <p class="text-white mb-3">Barú, Colombia</p>
+                <a href="#" class="btn btn-light">Reservar ahora</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Tarjeta 2 -->
+<div class="col-md-6 col-lg-4">
+<div class="destination-card">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="position-relative overflow-hidden">
+            <img src="{{ url_for('static', filename='IMG/Hotel.jpg') }}" alt="Hotel" class="card-img-top destination-img">
+            <div class="destination-overlay">
+                <h3 class="text-white mb-0">Su alojamiento ideal</h3>
+                <p class="text-white mb-3">está aquí</p>
+                <a href="#" class="btn btn-light">Buscar hotel</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Tarjeta 3 -->
+<div class="col-md-6 col-lg-4">
+<div class="destination-card">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="position-relative overflow-hidden">
+            <img src="{{ url_for('static', filename='IMG/Maletas.jpg') }}" alt="Maletas" class="card-img-top destination-img">
+            <div class="destination-overlay">
+                <h3 class="text-white mb-0">Aliste las maletas</h3>
+                <p class="text-white mb-3">Es momento de viajar</p>
+                <a href="#" class="btn btn-light">Obtener oferta</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Tarjeta 4 -->
+<div class="col-md-6 col-lg-4">
+<div class="destination-card">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="position-relative overflow-hidden">
+            <img src="{{ url_for('static', filename='IMG/Pareja.jpg') }}" alt="Pareja viajando" class="card-img-top destination-img">
+            <div class="destination-overlay">
+                <h3 class="text-white mb-0">Haga realidad</h3>
+                <p class="text-white mb-3">el viaje de sus sueños</p>
+                <a href="#" class="btn btn-light">Reserve ahora</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Tarjeta 5 -->
+<div class="col-md-6 col-lg-4">
+<div class="destination-card">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="position-relative overflow-hidden">
+            <img src="{{ url_for('static', filename='IMG/New york Estatua.jpg') }}" alt="Nueva York" class="card-img-top destination-img">
+            <div class="destination-overlay">
+                <h3 class="text-white mb-0">Nueva York es</h3>
+                <p class="text-white mb-3">su próxima aventura</p>
+                <a href="#" class="btn btn-light">Descúbralo ahora</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Tarjeta 6 -->
+<div class="col-md-6 col-lg-4">
+<div class="destination-card">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="position-relative overflow-hidden">
+            <img src="{{ url_for('static', filename='IMG/Regalar Viaje.jpg') }}" alt="Regalo viaje" class="card-img-top destination-img">
+            <div class="destination-overlay">
+                <h3 class="text-white mb-0">El regalo ideal</h3>
+                <p class="text-white mb-3">Para explorar juntos</p>
+                <a href="#" class="btn btn-light">Comprar ahora</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Vuelos Más Baratos -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="section-title">Vuelos más baratos</h2>
+                <p class="section-subtitle">Las mejores ofertas de vuelos ida y vuelta</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Vuelo 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ url_for('static', filename='IMG/Avianca.png') }}" class="img-fluid rounded-start h-100 object-cover" alt="Avianca">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2">Avianca</span>
+                                <h5 class="card-title mb-1">Bogotá → Miami</h5>
+                                <p class="card-text text-muted small mb-1">Del 10 al 17 de mayo, 2025</p>
+                                <div class="d-flex align-items-center mb-2">
+                                    <small class="me-1"><i class="fas fa-suitcase text-muted"></i> Equipaje incluido</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-primary">$520</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vuelo 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ url_for('static', filename='IMG/Latam.jpg') }}" class="img-fluid rounded-start h-100 object-cover" alt="LATAM">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <span class="badge bg-danger mb-2">LATAM</span>
+                                <h5 class="card-title mb-1">Bogotá → Santiago</h5>
+                                <p class="card-text text-muted small mb-1">Del 1 al 8 de junio, 2025</p>
+                                <div class="d-flex align-items-center mb-2">
+                                    <small class="me-1"><i class="fas fa-suitcase text-muted"></i> Equipaje incluido</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-primary">$650</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vuelo 3 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ url_for('static', filename='IMG/America airline.png') }}" class="img-fluid rounded-start h-100 object-cover" alt="American Airlines">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2">American Airlines</span>
+                                <h5 class="card-title mb-1">Bogotá → Nueva York</h5>
+                                <p class="card-text text-muted small mb-1">Del 15 al 22 de mayo, 2025</p>
+                                <div class="d-flex align-items-center mb-2">
+                                    <small class="me-1"><i class="fas fa-suitcase text-muted"></i> Equipaje incluido</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-primary">$680</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vuelo 4 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ url_for('static', filename='IMG/Copa Airlines.jpg') }}" class="img-fluid rounded-start h-100 object-cover" alt="Copa Airlines">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <span class="badge bg-warning text-dark mb-2">Copa Airlines</span>
+                                <h5 class="card-title mb-1">Bogotá → Panamá</h5>
+                                <p class="card-text text-muted small mb-1">Del 5 al 12 de junio, 2025</p>
+                                <div class="d-flex align-items-center mb-2">
+                                    <small class="me-1"><i class="fas fa-suitcase text-muted"></i> Equipaje incluido</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-primary">$420</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vuelo 5 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ url_for('static', filename='IMG/Air Europa.jpg') }}" class="img-fluid rounded-start h-100 object-cover" alt="Air Europa">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <span class="badge bg-info text-dark mb-2">Air Europa</span>
+                                <h5 class="card-title mb-1">Bogotá → Madrid</h5>
+                                <p class="card-text text-muted small mb-1">Del 20 al 30 de mayo, 2025</p>
+                                <div class="d-flex align-items-center mb-2">
+                                    <small class="me-1"><i class="fas fa-suitcase text-muted"></i> Equipaje incluido</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-primary">$890</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vuelo 6 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="row g-0">
+                        <div class="col-4">
+                            <img src="{{ url_for('static', filename='IMG/Viva air.jpg') }}" class="img-fluid rounded-start h-100 object-cover" alt="Viva Air">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <span class="badge bg-success mb-2">Viva Air</span>
+                                <h5 class="card-title mb-1">Bogotá → Cartagena</h5>
+                                <p class="card-text text-muted small mb-1">Del 1 al 5 de mayo, 2025</p>
+                                <div class="d-flex align-items-center mb-2">
+                                    <small class="me-1"><i class="fas fa-suitcase text-muted"></i> Equipaje incluido</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-primary">$240</span>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5">
+            <a href="#" class="btn btn-primary btn-lg">Ver más ofertas</a>
+        </div>
+    </div>
+</section>
+
+<!-- Preguntas Frecuentes -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="section-title">Preguntas Frecuentes</h2>
+                <p class="section-subtitle">Encuentre respuestas a sus preguntas comunes sobre viajes</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="accordion" id="faqAccordion">
+                    <!-- Pregunta 1 -->
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                ¿Cómo puedo pagar mis reservas?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Ofrecemos múltiples formas de pago para su comodidad. Aceptamos tarjetas de crédito/débito (Visa, Mastercard, American Express, Diners Club), transferencias bancarias a través de PSE, y pagos en efectivo en nuestras sucursales. Todos los pagos online son procesados de manera segura a través de Place to Pay.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pregunta 2 -->
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                ¿Puedo financiar mi viaje en cuotas?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>¡Sí! En CRUZERD ofrecemos planes de financiamiento para que puedas pagar tu viaje en cuotas. Puedes financiar con tarjetas de crédito seleccionadas hasta en 24 meses sin intereses dependiendo de las promociones vigentes. También contamos con créditos de viaje con tasas preferenciales.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pregunta 3 -->
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                ¿Cómo puedo cambiar o cancelar mi reserva?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Los cambios y cancelaciones están sujetos a las políticas de cada proveedor (aerolínea, hotel, etc.). Para solicitar un cambio o cancelación, puedes hacerlo a través de tu cuenta en nuestra web, contactando a nuestro servicio al cliente o visitando cualquiera de nuestras sucursales. Te recomendamos revisar las condiciones de tu reserva antes de realizar cualquier modificación.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pregunta 4 -->
+                    <div class="accordion-item border-0 shadow-sm mb-3">
+                        <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                ¿Qué documentos necesito para viajar?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Los requisitos documentales varían según el destino. Para vuelos nacionales generalmente solo se requiere documento de identidad. Para viajes internacionales, necesitarás pasaporte vigente y, dependiendo del país, visado. Algunos destinos pueden requerir certificados de vacunación o seguros de viaje obligatorios. Te recomendamos consultar los requisitos específicos de tu destino con suficiente anticipación.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pregunta 5 -->
+                    <div class="accordion-item border-0 shadow-sm">
+                        <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                ¿Ofrecen seguro de viaje?
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                <p>Sí, en CRUZERD ofrecemos varios tipos de seguros de viaje para proteger tu inversión y brindarte tranquilidad durante tu travesía. Nuestros seguros cubren cancelación de viaje, emergencias médicas, pérdida de equipaje, y más. Te recomendamos incluir un seguro en tu reserva, especialmente para viajes internacionales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="#" class="btn btn-outline-primary">
+                        Ver todas las preguntas frecuentes <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Medios de Pago -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="section-title">Nuestros medios de pago</h2>
+                <p class="section-subtitle">Las mejores opciones para realizar su compra</p>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-5">
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-4 text-center payment-methods">
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-credit-card fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Pague en cuotas</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-gift fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Tarjeta de regalo</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-university fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">PSE</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fab fa-cc-amex fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">American Express</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fab fa-cc-diners-club fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Diners Club</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fab fa-cc-visa fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Visa</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fab fa-cc-mastercard fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Mastercard</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-store fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Grupo Éxito</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-money-bill-wave fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Efecty</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="payment-method-item">
+                                    <i class="fas fa-landmark fa-2x mb-3 text-primary"></i>
+                                    <p class="mb-0">Codensa</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Suscripción Newsletter con funcionalidad -->
+<section class="py-5 bg-primary text-white newsletter-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="mb-4">Suscríbase a nuestro Newsletter</h2>
+                <p class="mb-5">Reciba promociones exclusivas, consejos de viaje y ofertas especiales directamente en su correo electrónico.</p>
+                
+                <form id="newsletterForm" class="row g-3 justify-content-center needs-validation" novalidate>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control form-control-lg" id="fullName" placeholder="Nombre Completo" required>
+                        <div class="invalid-feedback text-start">
+                            Por favor ingrese su nombre completo.
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="email" class="form-control form-control-lg" id="email" placeholder="Correo electrónico" required>
+                        <div class="invalid-feedback text-start">
+                            Por favor ingrese un correo electrónico válido.
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <div class="form-check text-start">
+                            <input class="form-check-input" type="checkbox" id="newsletterCheck1" required>
+                            <label class="form-check-label" for="newsletterCheck1">
+                                Me gustaría recibir boletines y ofertas especiales por correo electrónico.
+                            </label>
+                            <div class="invalid-feedback text-start">
+                                Debe aceptar recibir boletines para suscribirse.
+                            </div>
+                        </div>
+                        <div class="form-check text-start mt-2">
+                            <input class="form-check-input" type="checkbox" id="newsletterCheck2" required>
+                            <label class="form-check-label" for="newsletterCheck2">
+                                Autorizo el tratamiento de mis datos personales de conformidad con la política de datos y privacidad.
+                            </label>
+                            <div class="invalid-feedback text-start">
+                                Debe aceptar nuestra política de privacidad.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-light btn-lg px-5">Suscribirse</button>
+                    </div>
+                </form>
+                
+                <!-- Alerta de éxito (inicialmente oculta) -->
+                <div id="successAlert" class="alert alert-success mt-4" role="alert" style="display: none;">
+                    <i class="fas fa-check-circle me-2"></i> ¡Gracias por suscribirse! Hemos enviado un correo de confirmación a su dirección de email.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white pt-5 pb-3">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Columna 1 -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="mb-4">Acerca de nosotros</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="footer-link">Preguntas Frecuentes</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Contáctenos</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Sucursales CRUZERD</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Organización CRUZERD</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Trabaje con nosotros</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Premios y certificaciones</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Declaración viajero responsable</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Buenas prácticas en turismo sostenible</a></li>
+                </ul>
+            </div>
+            
+            <!-- Columna 2 -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="mb-4">Servicio al cliente</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="footer-link">Peticiones y reclamos</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Solicite su cotización aquí</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Evalúe nuestro sitio</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Escríbale a nuestro CEO</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Formulario de reversión de pagos</a></li>
+                </ul>
+                
+                <h5 class="mt-4 mb-3">Únase a nuestra comunidad</h5>
+                <div class="social-links">
+                    <a href="#" class="me-3 text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
+                    <a href="#" class="me-3 text-white"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" class="me-3 text-white"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a href="#" class="me-3 text-white"><i class="fab fa-youtube fa-lg"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                </div>
+            </div>
+            
+            <!-- Columna 3 -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="mb-4">Otros productos</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="footer-link">Casa Navegante</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Canal de contenidos RSS</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Blog CRUZERD</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Tiquetes baratos</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Hoteles baratos</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Contenidos CRUZERD</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Revista Horizontes</a></li>
+                </ul>
+            </div>
+            
+            <!-- Columna 4 -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="mb-4">Otros servicios</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="footer-link">Documentación</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">CRUZERD Legal</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">CRUZERD Seguros</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">CRUZERD Marketing</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Carga y logística</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Soluciones Hoteleras</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Viajes corporativos</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="row">
+            <div class="col-md-6 small">
+                <p>CRUZERD apoya el trabajo de UNICEF comprometiéndose con la protección de los derechos de las niñas, niños y adolescentes en Colombia y el mundo. Necesitamos también su compromiso. Invierta en el poder de los niños, el valor más rentable de Colombia.</p>
+                <p>&copy; 2025 CRUZERD - Todos los derechos reservados</p>
+                <p>CRUZERD INC. -Cra. 11B #97-3, Chapinero,   Bogotá, Colombia</p>
+                <p>cliente.com@cruzerd.com | Bogotá (601)3921716 | +57 322 7813 912</p>
+                <p>NIT: 860.000.018-2 | Agencia de viajes CRUZERD SAS | Registro Nacional de Turismo No. 438-25561</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="mb-3">Términos y Condiciones</h6>
+                <ul class="list-unstyled small">
+                    <li class="mb-2"><a href="#" class="footer-link">Términos y condiciones del sitio</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Términos y condiciones promocionales</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Política de Privacidad y Tratamiento de los Datos Personales</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Derechos del pasajero y/o deberes del transportador</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">SIC</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Contra la pornografía infantil</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Denuncie situaciones que afectan a menores de 18 años</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Modal de Login -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Iniciar sesión</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Alertas de error o éxito -->
+          <div id="loginAlert" class="alert d-none" role="alert"></div>
+          
+          <form id="loginForm" novalidate>
+            <div class="mb-4">
+              <label for="email" class="form-label">Correo electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required>
+                <div class="invalid-feedback">
+                  Por favor ingrese un correo electrónico válido.
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="password" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                  <i class="far fa-eye"></i>
+                </button>
+                <div class="invalid-feedback">
+                  Por favor ingrese su contraseña.
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-4">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="rememberCheck" name="remember">
+                <label class="form-check-label" for="rememberCheck">Recordar sesión</label>
+              </div>
+              <a href="#" class="text-accent">¿Olvidó su contraseña?</a>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" id="loginButton">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+                Iniciar sesión
+              </button>
+            </div>
+          </form>
+          
+          <div class="separator">
+            <span>O continúe con</span>
+          </div>
+          
+          <div class="social-buttons">
+            <a href="#" class="btn-social facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="btn-social google">
+              <i class="fab fa-google"></i>
+            </a>
+            <a href="#" class="btn-social twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <p class="mb-0">¿No tiene una cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="text-accent fw-bold">Regístrese</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Registro -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerModalLabel">Crear cuenta</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Alertas de error o éxito -->
+          <div id="registerAlert" class="alert d-none" role="alert"></div>
+          
+          <form id="registerForm" novalidate>
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre completo</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                <div class="invalid-feedback">
+                  Por favor ingrese su nombre completo.
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="registerEmail" class="form-label">Correo electrónico</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" id="registerEmail" name="email" placeholder="nombre@ejemplo.com" required>
+                <div class="invalid-feedback">
+                  Por favor ingrese un correo electrónico válido.
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="registerPassword" class="form-label">Contraseña</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="registerPassword" name="password" required>
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                  <i class="far fa-eye"></i>
+                </button>
+                <div class="invalid-feedback">
+                  Por favor ingrese una contraseña.
+                </div>
+              </div>
+              <div class="password-strength mt-2" id="passwordStrength">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                <small class="text-muted">Mínimo 8 caracteres, incluyendo mayúsculas, números y símbolos</small>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="confirm_password" class="form-label">Confirmar contraseña</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                  <i class="far fa-eye"></i>
+                </button>
+                <div class="invalid-feedback">
+                  Por favor confirme su contraseña.
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="rol" class="form-label">Tipo de cuenta</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                <select class="form-select" id="rol" name="rol" required>
+                  <option value="" selected disabled>Seleccione un tipo</option>
+                  <option value="cliente">Cliente</option>
+                  <option value="agente">Agente</option>
+                  <option value="proveedor">Proveedor</option>
+                </select>
+                <div class="invalid-feedback">
+                  Por favor seleccione un tipo de cuenta.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Campos específicos para proveedor -->
+            <div id="proveedorFields" style="display: none;">
+              <div class="mb-3">
+                <label for="nombre_empresa" class="form-label">Nombre de la empresa</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-building"></i></span>
+                  <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa">
+                  <div class="invalid-feedback">
+                    Por favor ingrese el nombre de la empresa.
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="tipo_proveedor" class="form-label">Tipo de proveedor</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-tags"></i></span>
+                  <select class="form-select" id="tipo_proveedor" name="tipo_proveedor">
+                    <option value="" selected disabled>Seleccione un tipo</option>
+                    <option value="hotel">Hotel</option>
+                    <option value="transporte">Transporte</option>
+                    <option value="actividad">Actividad turística</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Por favor seleccione un tipo de proveedor.
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4 form-check">
+              <input type="checkbox" class="form-check-input" id="termsCheck" required>
+              <label class="form-check-label" for="termsCheck">
+                Acepto los <a href="#" class="text-accent">términos y condiciones</a>
+              </label>
+              <div class="invalid-feedback">
+                Debe aceptar los términos y condiciones para continuar.
+              </div>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" id="registerButton">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+                Crear cuenta
+              </button>
+            </div>
+          </form>
+          
+          <div class="separator">
+            <span>O regístrese con</span>
+          </div>
+          
+          <div class="social-buttons">
+            <a href="#" class="btn-social facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="btn-social google">
+              <i class="fab fa-google"></i>
+            </a>
+            <a href="#" class="btn-social twitter">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <p class="mb-0">¿Ya tiene una cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal" class="text-accent fw-bold">Inicie sesión</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    /*
+    function simulateRole(role) {
+      location.href = '/auth/demo/' + role;
+    }
+  
+    <button onclick="simulateRole('cliente')">Ver como Cliente</button>
+    <button onclick="simulateRole('agente')">Ver como Agente</button>
+    <button onclick="simulateRole('proveedor')">Ver como Proveedor</button>
+    */
+  </script>
+  
+
+  
+
+<!-- Scripts de Bootstrap y JS personalizado -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>

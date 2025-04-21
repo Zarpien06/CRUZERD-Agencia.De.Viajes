@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Proveedor - Sistema de Viajes</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='IMG/logo-1.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/proveedor.css') }}">
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar d-md-block collapse" id="sidebar">
+                <div class="position-sticky">
+                    <div class="d-flex align-items-center p-3">
+                        <h5 class="mb-0">Panel de Control</h5>
+                    </div>
+                    <hr class="my-2">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('proveedor.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        
+                        {% if proveedor.tipo == 'hotel' or proveedor.tipo == 'ambos' %}
+                        <li class="sidebar-heading">Gestión Hotelera</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('proveedor.hoteles') }}">
+                                <i class="fas fa-hotel me-2"></i>
+                                Mis Hoteles
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if proveedor.tipo == 'aerolinea' or proveedor.tipo == 'ambos' %}
+                        <li class="sidebar-heading">Gestión Aerolínea</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('proveedor.aerolineas') }}">
+                                <i class="fas fa-plane me-2"></i>
+                                Mis Aerolíneas
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="sidebar-heading">Paquetes Turísticos</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('proveedor.paquetes') }}">
+                                <i class="fas fa-box me-2"></i>
+                                Administrar Paquetes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('proveedor.promociones') }}">
+                                <i class="fas fa-tag me-2"></i>
+                                Promociones
+                            </a>
+                        </li>
+                        
+                        <li class="sidebar-heading">Cuenta</li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index') }}">
+                                <i class="fas fa-home me-2"></i>
+                                Volver al Inicio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Contenido Principal -->
+            <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Dashboard</h4>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="me-2">{{ current_user.nombre }}</span>
+                                <i class="fas fa-user-circle"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="#">Perfil</a></li>
+                                <li><a class="dropdown-item" href="#">Configuración</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Cerrar sesión</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contenido del dashboard -->
+                <div class="container mt-4">
+                    <!-- Tarjetas de estadísticas -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card stat-card card-primary">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Total de Reservas</h6>
+                                            <h3 class="mb-0">{{ metricas.total_reservas }}</h3>
+                                        </div>
+                                        <div class="fs-1 text-primary">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stat-card card-success">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Ingresos Totales</h6>
+                                            <h3 class="mb-0">${{ "{:,.2f}".format(metricas.ingresos_totales) }}</h3>
+                                        </div>
+                                        <div class="fs-1 text-success">
+                                            <i class="fas fa-dollar-sign"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card stat-card card-warning">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-muted mb-1">Ocupación Promedio</h6>
+                                            <h3 class="mb-0">{{ "{:.1f}".format(metricas.ocupacion_promedio) }}%</h3>
+                                        </div>
+                                        <div class="fs-1 text-warning">
+                                            <i class="fas fa-chart-pie"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+<!-- Gráficos y tablas -->
+<div class="row mt-4">
+    <!-- Resumen de Reservas Recientes -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Reservas Recientes</h5>
+            </div>
+            <div class="card-body">
+                {% if metricas.reservas_recientes %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Fecha</th>
+                                <th>Paquete</th>
+                                <th>Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reserva in metricas.reservas_recientes %}
+                            <tr>
+                                <td>{{ reserva.codigo }}</td>
+                                <td>{{ reserva.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ reserva.paquete }}</td>
+                                <td>${{ "{:,.2f}".format(reserva.monto) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <i class="fas fa-info-circle text-muted fs-2 mb-3"></i>
+                    <p class="mb-0">No hay reservas recientes para mostrar</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Ocupación -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Niveles de Ocupación</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="ocupacionChart" height="215"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Servicios del Proveedor -->
+<div class="row mt-4">
+    <!-- Hoteles -->
+    {% if proveedor.tipo == 'hotel' or proveedor.tipo == 'ambos' %}
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Mis Hoteles</h5>
+                <a href="{{ url_for('proveedor.hoteles') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye me-1"></i> Ver todos
+                </a>
+            </div>
+            <div class="card-body">
+                {% if hoteles %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Ubicación</th>
+                                <th>Estrellas</th>
+                                <th>Ocupación</th>
+                                <th>Reservas</th>
+                                <th>Ingresos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for hotel in hoteles %}
+                            <tr>
+                                <td>{{ hotel.nombre }}</td>
+                                <td>{{ hotel.ciudad }}, {{ hotel.pais }}</td>
+                                <td>
+                                    {% for i in range(hotel.estrellas) %}
+                                    <i class="fas fa-star text-warning"></i>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ hotel.ocupacion }}%;" 
+                                             aria-valuenow="{{ hotel.ocupacion }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <small>{{ "{:.1f}".format(hotel.ocupacion) }}%</small>
+                                </td>
+                                <td>{{ hotel.total_reservas }}</td>
+                                <td>${{ "{:,.2f}".format(hotel.ingresos) }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('proveedor.habitaciones', hotel_id=hotel.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-bed"></i> Habitaciones
+                                        </a>
+                                        <a href="{{ url_for('proveedor.editar_hotel', hotel_id=hotel.id) }}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <i class="fas fa-hotel text-muted fs-2 mb-3"></i>
+                    <p class="mb-3">No tiene hoteles registrados actualmente</p>
+                    <a href="{{ url_for('proveedor.nuevo_hotel') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Agregar Hotel
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- Modal para Crear Hotel -->
+<div class="modal fade" id="crearHotelModal" tabindex="-1" aria-labelledby="crearHotelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearHotelModalLabel">Crear Nuevo Hotel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('proveedor.nuevo_hotel') }}" method="POST">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="nombre" class="form-label">Nombre del Hotel</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="ciudad" class="form-label">Ciudad</label>
+                <input type="text" class="form-control" id="ciudad" name="ciudad" required>
+              </div>
+              <div class="col-md-6">
+                <label for="pais" class="form-label">País</label>
+                <input type="text" class="form-control" id="pais" name="pais" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="estrellas" class="form-label">Estrellas</label>
+                <select class="form-select" id="estrellas" name="estrellas" required>
+                  <option value="">Seleccione</option>
+                  <option value="1">1 Estrella</option>
+                  <option value="2">2 Estrellas</option>
+                  <option value="3">3 Estrellas</option>
+                  <option value="4">4 Estrellas</option>
+                  <option value="5">5 Estrellas</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Hotel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Editar Hotel -->
+  <div class="modal fade" id="editarHotelModal" tabindex="-1" aria-labelledby="editarHotelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarHotelModalLabel">Editar Hotel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formEditarHotel" action="" method="POST">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="edit_nombre" class="form-label">Nombre del Hotel</label>
+                <input type="text" class="form-control" id="edit_nombre" name="nombre" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="edit_direccion" class="form-label">Dirección</label>
+                <input type="text" class="form-control" id="edit_direccion" name="direccion" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="edit_ciudad" class="form-label">Ciudad</label>
+                <input type="text" class="form-control" id="edit_ciudad" name="ciudad" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit_pais" class="form-label">País</label>
+                <input type="text" class="form-control" id="edit_pais" name="pais" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="edit_estrellas" class="form-label">Estrellas</label>
+                <select class="form-select" id="edit_estrellas" name="estrellas" required>
+                  <option value="1">1 Estrella</option>
+                  <option value="2">2 Estrellas</option>
+                  <option value="3">3 Estrellas</option>
+                  <option value="4">4 Estrellas</option>
+                  <option value="5">5 Estrellas</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Eliminar Hotel -->
+  <div class="modal fade" id="eliminarHotelModal" tabindex="-1" aria-labelledby="eliminarHotelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eliminarHotelModalLabel">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Está seguro que desea eliminar el hotel <span id="hotel_nombre_eliminar" class="fw-bold"></span>?</p>
+          <p class="text-danger">Esta acción no se puede deshacer y eliminará todas las habitaciones asociadas.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <form id="formEliminarHotel" action="" method="POST">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Gestionar Habitaciones -->
+  <div class="modal fade" id="gestionHabitacionesModal" tabindex="-1" aria-labelledby="gestionHabitacionesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gestionHabitacionesModalLabel">Gestionar Habitaciones - <span id="hotel_nombre_habitaciones"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn btn-success" id="btnNuevaHabitacion">
+              <i class="fas fa-plus me-1"></i> Nueva Habitación
+            </button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-hover" id="tablaHabitaciones">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Capacidad</th>
+                  <th>Precio por Noche</th>
+                  <th>Disponible</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Los datos de habitaciones se cargarán dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Form para crear/editar habitación (inicialmente oculto) -->
+          <div id="formHabitacionContainer" class="border rounded p-3 mt-3" style="display: none;">
+            <h6 class="mb-3" id="tituloFormHabitacion">Nueva Habitación</h6>
+            <form id="formHabitacion" action="" method="POST">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="tipo_habitacion" class="form-label">Tipo de Habitación</label>
+                  <select class="form-select" id="tipo_habitacion" name="tipo" required>
+                    <option value="">Seleccione</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Doble">Doble</option>
+                    <option value="Triple">Triple</option>
+                    <option value="Suite">Suite</option>
+                    <option value="Familiar">Familiar</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="capacidad_habitacion" class="form-label">Capacidad</label>
+                  <input type="number" class="form-control" id="capacidad_habitacion" name="capacidad" min="1" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="precio_habitacion" class="form-label">Precio por Noche</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="precio_habitacion" name="precio" step="0.01" min="0" required>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="disponible_habitacion" name="disponible" checked>
+                    <label class="form-check-label" for="disponible_habitacion">
+                      Disponible para reservas
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2" id="btnCancelarHabitacion">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Habitación</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+    <!-- Aerolíneas -->
+    {% if proveedor.tipo == 'aerolinea' or proveedor.tipo == 'ambos' %}
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Mis Aerolíneas</h5>
+                <a href="{{ url_for('proveedor.aerolineas') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye me-1"></i> Ver todas
+                </a>
+            </div>
+            <div class="card-body">
+                {% if aerolineas %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Código</th>
+                                <th>Ocupación</th>
+                                <th>Reservas</th>
+                                <th>Ingresos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for aerolinea in aerolineas %}
+                            <tr>
+                                <td>{{ aerolinea.nombre }}</td>
+                                <td><span class="badge bg-secondary">{{ aerolinea.codigo }}</span></td>
+                                <td>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ aerolinea.ocupacion }}%;" 
+                                             aria-valuenow="{{ aerolinea.ocupacion }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <small>{{ "{:.1f}".format(aerolinea.ocupacion) }}%</small>
+                                </td>
+                                <td>{{ aerolinea.total_reservas }}</td>
+                                <td>${{ "{:,.2f}".format(aerolinea.ingresos) }}</td>
+                                <td>
+                                    <a href="{{ url_for('proveedor.vuelos', aerolinea_id=aerolinea.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-plane"></i> Vuelos
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <i class="fas fa-plane text-muted fs-2 mb-3"></i>
+                    <p class="mb-3">No tiene aerolíneas registradas actualmente</p>
+                    <a href="{{ url_for('proveedor.nueva_aerolinea') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Agregar Aerolínea
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+<!-- Modal para Crear Aerolínea -->
+<div class="modal fade" id="crearAerolineaModal" tabindex="-1" aria-labelledby="crearAerolineaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearAerolineaModalLabel">Crear Nueva Aerolínea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('proveedor.nueva_aerolinea') }}" method="POST">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="nombre_aerolinea" class="form-label">Nombre de la Aerolínea</label>
+                <input type="text" class="form-control" id="nombre_aerolinea" name="nombre" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="codigo_aerolinea" class="form-label">Código IATA</label>
+                <input type="text" class="form-control" id="codigo_aerolinea" name="codigo" maxlength="2" pattern="[A-Z]{2}" required>
+                <div class="form-text">Código de 2 letras (ej: AA, IB, LA)</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Aerolínea</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Editar Aerolínea -->
+  <div class="modal fade" id="editarAerolineaModal" tabindex="-1" aria-labelledby="editarAerolineaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarAerolineaModalLabel">Editar Aerolínea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formEditarAerolinea" action="" method="POST">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="edit_nombre_aerolinea" class="form-label">Nombre de la Aerolínea</label>
+                <input type="text" class="form-control" id="edit_nombre_aerolinea" name="nombre" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="edit_codigo_aerolinea" class="form-label">Código IATA</label>
+                <input type="text" class="form-control" id="edit_codigo_aerolinea" name="codigo" maxlength="2" pattern="[A-Z]{2}" required>
+                <div class="form-text">Código de 2 letras (ej: AA, IB, LA)</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Eliminar Aerolínea -->
+  <div class="modal fade" id="eliminarAerolineaModal" tabindex="-1" aria-labelledby="eliminarAerolineaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eliminarAerolineaModalLabel">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Está seguro que desea eliminar la aerolínea <span id="aerolinea_nombre_eliminar" class="fw-bold"></span>?</p>
+          <p class="text-danger">Esta acción no se puede deshacer y eliminará todos los vuelos asociados.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <form id="formEliminarAerolinea" action="" method="POST">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Gestionar Vuelos -->
+  <div class="modal fade" id="gestionVuelosModal" tabindex="-1" aria-labelledby="gestionVuelosModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gestionVuelosModalLabel">Gestionar Vuelos - <span id="aerolinea_nombre_vuelos"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn btn-success" id="btnNuevoVuelo">
+              <i class="fas fa-plus me-1"></i> Nuevo Vuelo
+            </button>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-hover" id="tablaVuelos">
+              <thead>
+                <tr>
+                  <th>Origen</th>
+                  <th>Destino</th>
+                  <th>Fecha Salida</th>
+                  <th>Fecha Llegada</th>
+                  <th>Capacidad</th>
+                  <th>Disponibles</th>
+                  <th>Precio</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Los datos de vuelos se cargarán dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Form para crear vuelo (inicialmente oculto) -->
+          <div id="formVueloContainer" class="border rounded p-3 mt-3" style="display: none;">
+            <h6 class="mb-3" id="tituloFormVuelo">Nuevo Vuelo</h6>
+            <form id="formVuelo" action="" method="POST">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="origen_id" class="form-label">Aeropuerto de Origen</label>
+                  <select class="form-select" id="origen_id" name="origen_id" required>
+                    <option value="">Seleccione</option>
+                    {% for aeropuerto in aeropuertos %}
+                    <option value="{{ aeropuerto.id }}">{{ aeropuerto.nombre }} ({{ aeropuerto.codigo }})</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label for="destino_id" class="form-label">Aeropuerto de Destino</label>
+                  <select class="form-select" id="destino_id" name="destino_id" required>
+                    <option value="">Seleccione</option>
+                    {% for aeropuerto in aeropuertos %}
+                    <option value="{{ aeropuerto.id }}">{{ aeropuerto.nombre }} ({{ aeropuerto.codigo }})</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="fecha_salida" class="form-label">Fecha y Hora de Salida</label>
+                  <input type="datetime-local" class="form-control" id="fecha_salida" name="fecha_salida" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="fecha_llegada" class="form-label">Fecha y Hora de Llegada</label>
+                  <input type="datetime-local" class="form-control" id="fecha_llegada" name="fecha_llegada" required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <label for="capacidad" class="form-label">Capacidad Total</label>
+                  <input type="number" class="form-control" id="capacidad" name="capacidad" min="1" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="precio" class="form-label">Precio Base</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0" required>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2" id="btnCancelarVuelo">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar Vuelo</button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Form para actualizar vuelo (inicialmente oculto) -->
+          <div id="formActualizarVueloContainer" class="border rounded p-3 mt-3" style="display: none;">
+            <h6 class="mb-3">Actualizar Disponibilidad y Precio</h6>
+            <form id="formActualizarVuelo" action="" method="POST">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="asientos_disponibles" class="form-label">Asientos Disponibles</label>
+                  <input type="number" class="form-control" id="asientos_disponibles" name="asientos_disponibles" min="0" required>
+                  <div id="capacidad_maxima" class="form-text">Capacidad máxima: <span id="max_capacidad">0</span></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="precio_actualizar" class="form-label">Precio</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" id="precio_actualizar" name="precio" step="0.01" min="0" required>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2" id="btnCancelarActualizarVuelo">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Actualizar Vuelo</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+
+
+    <!-- Paquetes Turísticos -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Paquetes Turísticos</h5>
+                <a href="{{ url_for('proveedor.paquetes') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye me-1"></i> Ver todos
+                </a>
+            </div>
+            <div class="card-body">
+                {% if paquetes %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Duración</th>
+                                <th>Precio</th>
+                                <th>Servicios</th>
+                                <th>Ventas</th>
+                                <th>Promoción</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for paquete in paquetes %}
+                            <tr>
+                                <td>{{ paquete.nombre }}</td>
+                                <td>{{ paquete.duracion }} días</td>
+                                <td>${{ "{:,.2f}".format(paquete.precio) }}</td>
+                                <td>
+                                    {% if paquete.hotel %}
+                                    <span class="badge bg-info">Hotel</span>
+                                    {% endif %}
+                                    {% if paquete.vuelo %}
+                                    <span class="badge bg-primary">Vuelo</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ paquete.total_ventas|default(0) }}</td>
+                                <td>
+                                    {% if paquete.promocion_activa %}
+                                    <span class="badge bg-success">{{ paquete.promocion_activa.porcentaje_descuento }}% OFF</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Sin promoción</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if paquete.activo %}
+                                    <span class="badge bg-success">Activo</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('proveedor.editar_paquete', paquete_id=paquete.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('proveedor.nueva_promocion') }}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-tag"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center p-4">
+                    <i class="fas fa-box text-muted fs-2 mb-3"></i>
+                    <p class="mb-3">No tiene paquetes turísticos configurados</p>
+                    <a href="{{ url_for('proveedor.nuevo_paquete') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Crear Paquete
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modal para Crear Paquete Turístico -->
+<div class="modal fade" id="crearPaqueteModal" tabindex="-1" aria-labelledby="crearPaqueteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearPaqueteModalLabel">Crear Nuevo Paquete Turístico</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('proveedor.nuevo_paquete') }}" method="POST">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="nombre_paquete" class="form-label">Nombre del Paquete</label>
+                <input type="text" class="form-control" id="nombre_paquete" name="nombre" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="descripcion_paquete" class="form-label">Descripción</label>
+                <textarea class="form-control" id="descripcion_paquete" name="descripcion" rows="3" required></textarea>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="destino_id" class="form-label">Destino Principal</label>
+                <select class="form-select" id="destino_id" name="destino_id" required>
+                  <option value="">Seleccione</option>
+                  {% for destino in destinos %}
+                  <option value="{{ destino.id }}">{{ destino.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="duracion" class="form-label">Duración (días)</label>
+                <input type="number" class="form-control" id="duracion" name="duracion" min="1" max="30" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+              </div>
+              <div class="col-md-6">
+                <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="precio_base" class="form-label">Precio Base</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="precio_base" name="precio_base" step="0.01" min="0" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="capacidad" class="form-label">Capacidad Total</label>
+                <input type="number" class="form-control" id="capacidad" name="capacidad" min="1" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Incluye:</label>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="incluye_vuelo" name="incluye_vuelo" value="1">
+                    <label class="form-check-label" for="incluye_vuelo">Vuelos</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="incluye_hotel" name="incluye_hotel" value="1">
+                    <label class="form-check-label" for="incluye_hotel">Alojamiento</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="incluye_traslados" name="incluye_traslados" value="1">
+                    <label class="form-check-label" for="incluye_traslados">Traslados</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="incluye_comidas" name="incluye_comidas" value="1">
+                    <label class="form-check-label" for="incluye_comidas">Comidas</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="incluye_excursiones" name="incluye_excursiones" value="1">
+                    <label class="form-check-label" for="incluye_excursiones">Excursiones</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="incluye_guia" name="incluye_guia" value="1">
+                    <label class="form-check-label" for="incluye_guia">Guía Turístico</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Paquete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Editar Paquete Turístico -->
+  <div class="modal fade" id="editarPaqueteModal" tabindex="-1" aria-labelledby="editarPaqueteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarPaqueteModalLabel">Editar Paquete Turístico</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="formEditarPaquete" action="" method="POST">
+          <div class="modal-body">
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="edit_nombre_paquete" class="form-label">Nombre del Paquete</label>
+                <input type="text" class="form-control" id="edit_nombre_paquete" name="nombre" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-12">
+                <label for="edit_descripcion_paquete" class="form-label">Descripción</label>
+                <textarea class="form-control" id="edit_descripcion_paquete" name="descripcion" rows="3" required></textarea>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="edit_destino_id" class="form-label">Destino Principal</label>
+                <select class="form-select" id="edit_destino_id" name="destino_id" required>
+                  <option value="">Seleccione</option>
+                  {% for destino in destinos %}
+                  <option value="{{ destino.id }}">{{ destino.nombre }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="edit_duracion" class="form-label">Duración (días)</label>
+                <input type="number" class="form-control" id="edit_duracion" name="duracion" min="1" max="30" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="edit_fecha_inicio" class="form-label">Fecha de Inicio</label>
+                <input type="date" class="form-control" id="edit_fecha_inicio" name="fecha_inicio" required>
+              </div>
+              <div class="col-md-6">
+                <label for="edit_fecha_fin" class="form-label">Fecha de Fin</label>
+                <input type="date" class="form-control" id="edit_fecha_fin" name="fecha_fin" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="edit_precio_base" class="form-label">Precio Base</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="edit_precio_base" name="precio_base" step="0.01" min="0" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="edit_capacidad" class="form-label">Capacidad Total</label>
+                <input type="number" class="form-control" id="edit_capacidad" name="capacidad" min="1" required>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="edit_disponibles" class="form-label">Plazas Disponibles</label>
+                <input type="number" class="form-control" id="edit_disponibles" name="disponibles" min="0" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Incluye:</label>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_incluye_vuelo" name="incluye_vuelo" value="1">
+                    <label class="form-check-label" for="edit_incluye_vuelo">Vuelos</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_incluye_hotel" name="incluye_hotel" value="1">
+                    <label class="form-check-label" for="edit_incluye_hotel">Alojamiento</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_incluye_traslados" name="incluye_traslados" value="1">
+                    <label class="form-check-label" for="edit_incluye_traslados">Traslados</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-2">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_incluye_comidas" name="incluye_comidas" value="1">
+                    <label class="form-check-label" for="edit_incluye_comidas">Comidas</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_incluye_excursiones" name="incluye_excursiones" value="1">
+                    <label class="form-check-label" for="edit_incluye_excursiones">Excursiones</label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_incluye_guia" name="incluye_guia" value="1">
+                    <label class="form-check-label" for="edit_incluye_guia">Guía Turístico</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Eliminar Paquete Turístico -->
+  <div class="modal fade" id="eliminarPaqueteModal" tabindex="-1" aria-labelledby="eliminarPaqueteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eliminarPaqueteModalLabel">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Está seguro que desea eliminar el paquete turístico <span id="paquete_nombre_eliminar" class="fw-bold"></span>?</p>
+          <p class="text-danger">Esta acción no se puede deshacer y eliminará todas las reservas pendientes asociadas.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <form id="formEliminarPaquete" action="" method="POST">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para Ver Detalle de Paquete -->
+  <div class="modal fade" id="detallePaqueteModal" tabindex="-1" aria-labelledby="detallePaqueteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detallePaqueteModalLabel">Detalle del Paquete</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6>Información General</h6>
+              <table class="table table-borderless">
+                <tr>
+                  <th style="width: 40%">Nombre:</th>
+                  <td id="detalle_nombre"></td>
+                </tr>
+                <tr>
+                  <th>Destino:</th>
+                  <td id="detalle_destino"></td>
+                </tr>
+                <tr>
+                  <th>Duración:</th>
+                  <td id="detalle_duracion"></td>
+                </tr>
+                <tr>
+                  <th>Fechas:</th>
+                  <td id="detalle_fechas"></td>
+                </tr>
+                <tr>
+                  <th>Precio Base:</th>
+                  <td id="detalle_precio"></td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h6>Disponibilidad</h6>
+              <table class="table table-borderless">
+                <tr>
+                  <th style="width: 40%">Capacidad Total:</th>
+                  <td id="detalle_capacidad"></td>
+                </tr>
+                <tr>
+                  <th>Plazas Vendidas:</th>
+                  <td id="detalle_vendidas"></td>
+                </tr>
+                <tr>
+                  <th>Plazas Disponibles:</th>
+                  <td id="detalle_disponibles"></td>
+                </tr>
+                <tr>
+                  <th>Ocupación:</th>
+                  <td id="detalle_ocupacion"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12">
+              <h6>Descripción</h6>
+              <p id="detalle_descripcion" class="border p-2 bg-light"></p>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12">
+              <h6>Incluye</h6>
+              <ul class="list-group list-group-horizontal flex-wrap">
+                <li class="list-group-item flex-fill" id="detalle_vuelo">
+                  <i class="fas fa-plane me-2"></i> Vuelos 
+                  <span class="badge ms-1"></span>
+                </li>
+                <li class="list-group-item flex-fill" id="detalle_hotel">
+                  <i class="fas fa-hotel me-2"></i> Alojamiento
+                  <span class="badge ms-1"></span>
+                </li>
+                <li class="list-group-item flex-fill" id="detalle_traslados">
+                  <i class="fas fa-shuttle-van me-2"></i> Traslados
+                  <span class="badge ms-1"></span>
+                </li>
+                <li class="list-group-item flex-fill" id="detalle_comidas">
+                  <i class="fas fa-utensils me-2"></i> Comidas
+                  <span class="badge ms-1"></span>
+                </li>
+                <li class="list-group-item flex-fill" id="detalle_excursiones">
+                  <i class="fas fa-mountain me-2"></i> Excursiones
+                  <span class="badge ms-1"></span>
+                </li>
+                <li class="list-group-item flex-fill" id="detalle_guia">
+                  <i class="fas fa-user-tie me-2"></i> Guía
+                  <span class="badge ms-1"></span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-12">
+              <h6>Reservas</h6>
+              <div id="reservas_container">
+                <div class="text-center py-3 text-muted" id="sin_reservas">
+                  No hay reservas para este paquete
+                </div>
+                <table class="table table-striped" id="tabla_reservas" style="display: none;">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Fecha de Reserva</th>
+                      <th>Personas</th>
+                      <th>Estado</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Se cargará dinámicamente -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Modal para Cerrar Sesión -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="logoutModalLabel">Cerrar Sesión</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+¿Está seguro que desea cerrar la sesión?
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+<a href="{{ url_for('logout') }}" class="btn btn-primary">Cerrar Sesión</a>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Bootstrap JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js para gráficas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="{{ url_for('static', filename='js/proveedor.js') }}"></script>
+</body>
+</html>

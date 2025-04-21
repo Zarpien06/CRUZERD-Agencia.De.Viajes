@@ -1,0 +1,66 @@
+body {
+    background-color: #f8f9fa;
+}
+.sidebar {
+    background-color: #343a40;
+    min-height: 100vh;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+}
+.sidebar .nav-link:hover {
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+.sidebar-heading {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding: 1rem 1rem 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+.main-content {
+    padding: 2rem;
+}
+.header {
+    background-color: white;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 2rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+}
+.stat-card {
+    border-left: 4px solid;
+    border-radius: 0.25rem;
+}
+.stat-card.card-primary {
+    border-left-color: #007bff;
+}
+.stat-card.card-success {
+    border-left-color: #28a745;
+}
+.stat-card.card-warning {
+    border-left-color: #ffc107;
+}
+.stat-card.card-danger {
+    border-left-color: #dc3545;
+}
+/* Animación para modales */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+}
+.modal.show .modal-dialog {
+    transform: none;
+}
